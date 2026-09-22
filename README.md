@@ -28,13 +28,13 @@ src/
 ├── pages/
 └── ...
 
-# Tecnologías utilizadas
+### Tecnologías utilizadas
 - React
 - Vite
 - Atomic Design
 - HTML/JS/CSS
 
-# Cómo ejecutar el proyecto
+### Cómo ejecutar el proyecto
 Primero instalar las dependencias:
 
 npm install
@@ -47,7 +47,7 @@ Después abrir en el navegador la dirección que entrega Vite, por ejemplo:
 
 http://localhost:5173/
 
-# Material complementario
+### Material complementario
 Los documentos del proyecto, como la ERS y otros materiales solicitados
 durante el semestre, estarán disponibles en la siguiente carpeta de Google
 Drive:
