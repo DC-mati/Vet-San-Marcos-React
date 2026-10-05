@@ -1,0 +1,13 @@
+.admin-page {
+  min-height: 100vh;
+  background-color: #f5f6fa;
+}
+
+.admin-content {
+  padding: 30px;
+}
+
+.admin-content h1 {
+  margin-bottom: 25px;
+  color: #333;
+}
