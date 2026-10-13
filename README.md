@@ -1,54 +1,16 @@
-# Grupo 9
+# React + Vite
 
-- Hanael Echeverría: ha.echeverria@duocuc.cl
-- Matías Soto: mat.sotoz@duocuc.cl
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-# Proyecto
+Currently, two official plugins are available:
 
-## Veterinaria San Marcos
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-### Descripción del caso
+## React Compiler
 
-Veterinaria San Marcos es un sitio web creado para ayudar a organizar y guardar
-la información de una veterinaria. La aplicación busca evitar la pérdida de
-datos y facilitar el acceso a la información para las personas que trabajan
-en la veterinaria.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-### Estructura del proyecto
+## Expanding the Oxlint configuration
 
-El proyecto está organizado utilizando Atomic Design:
-
-```text
-src/
-├── components/
-│   ├── atoms/
-│   ├── molecules/
-│   ├── organisms/
-│   └── templates/
-├── pages/
-└── ...
-
-### Tecnologías utilizadas
-- React
-- Vite
-- Atomic Design
-- HTML/JS/CSS
-
-### Cómo ejecutar el proyecto
-Primero instalar las dependencias:
-
-npm install
-
-Luego ejecutar el proyecto:
-
-npm run dev
-
-Después abrir en el navegador la dirección que entrega Vite, por ejemplo:
-
-http://localhost:5173/
-
-### Material complementario
-Los documentos del proyecto, como la ERS y otros materiales solicitados
-durante el semestre, estarán disponibles en la siguiente carpeta de Google
-Drive:
-https://drive.google.com/drive/folders/1orzM2C_laTuPrgC-WObO22VKIl5Er3q3?usp=drive_link
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.

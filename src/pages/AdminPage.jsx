@@ -6,8 +6,12 @@ import Sidebar from "../components/organisms/SideBar.jsx";
 import DashboardStats from "../components/organisms/DashBoardStats.jsx";
 
 import '../admin.css';
+import { useTituloPagina } from '../hooks/useTitulodePagina.jsx';
 
 function AdminPage() {
+
+  useTituloPagina('Admin')
+
   return (
     <Container fluid className='admin-page'>
       <Row>

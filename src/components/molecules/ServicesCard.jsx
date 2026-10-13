@@ -1,5 +1,5 @@
 import Form from 'react-bootstrap/Form'
-import { Button } from '../atoms/Button';
+import { Button } from '../atoms/PrimaryButton';
 import { Badge } from '../atoms/Badge';
 
 export const ServiceCard = ({ id, title, category, price, description, onSelect }) => {
