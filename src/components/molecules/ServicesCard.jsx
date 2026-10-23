@@ -1,21 +1,24 @@
-import Form from 'react-bootstrap/Form'
-import { Button } from '../atoms/PrimaryButton';
-import { Badge } from '../atoms/Badge';
+import Card from 'react-bootstrap/Card';
 
-export const ServiceCard = ({ id, title, category, price, description, onSelect }) => {
+export default function ServicePreviewCard({ servicio }) {
+  const precioFormateado = new Intl.NumberFormat('es-CL', {
+    maximumFractionDigits: 0,
+  }).format(servicio.precio);
+
   return (
-    <div className="service-card">
-      <div className="service-card__header">
-        <h3>{title}</h3>
-        <Badge text={category} type="secondary" />
-      </div>
-      <p className="service-card__description">{description}</p>
-      <div className="service-card__footer">
-        <span className="service-card__price">${price}</span>
-        <Button onClick={() => onSelect(id)} variant="primary">
-          Agendar
-        </Button>
-      </div>
-    </div>
+    <Card className="h-100 shadow-sm border-0 service-preview">
+      <Card.Body>
+        <Card.Title>{servicio.nombre}</Card.Title>
+
+        <Card.Text className="text-secondary mb-2">
+          {servicio.descripcion}
+          {servicio.duracion && ` · ${servicio.duracion}`}
+        </Card.Text>
+
+        <p className="service-preview__price mb-0">
+          ${precioFormateado}
+        </p>
+      </Card.Body>
+    </Card>
   );
-};
+}

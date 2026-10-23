@@ -1,14 +1,14 @@
+
+import React from 'react';
 import Card from 'react-bootstrap/Card';
 import logo from '../../assets/logo-san-marcos.png';
-
-import LoginForm from '../molecules/LoginForm';
+import FormularioLogin from './FormularioLogin';
 
 function LoginCard() {
   return (
-    <Card>
+    <Card className="shadow-sm mx-auto" style={{ maxWidth: '400px' }}>
       <Card.Body>
-
-        <div className="p-4">
+        <div className="p-4 text-center">
           <img
             src={logo}
             alt="Logo veterinaria"
@@ -16,12 +16,11 @@ function LoginCard() {
           />
         </div>
 
-        <Card.Title className="text-center mb-4">
+        <Card.Title className="text-center mb-4 fs-3">
           Iniciar sesión
         </Card.Title>
 
-        <LoginForm />
-
+        <FormularioLogin />
       </Card.Body>
     </Card>
   );
