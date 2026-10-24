@@ -8,6 +8,7 @@ import PlantillaAdmin from '../components/templates/PlantillaAdmin'
 import TarjetaResumenDueno from '../components/molecules/TarjetaResumenDueno'
 import SeccionProximasCitasDueno from '../components/organisms/SeccionProximasCitasDueno'
 import { enlacesPanelDueno } from '../constants/enlacesDueno'
+import { rutasCitaDueno } from '../constants/rutasDuenoCita'
 import { useAuth } from '../context/AuthContext'
 import { useCitas } from '../context/CitasContext'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
@@ -73,11 +74,14 @@ export default function DuenoDashboardPage() {
       </Row>
 
       <div className="d-flex flex-wrap gap-2 mb-4">
-        <Button as={Link} to="/solicitar-cita" variant="primary">
+        <Button as={Link} to={rutasCitaDueno.formulario} variant="primary">
           Solicitar una cita
         </Button>
         <Button as={Link} to="/dueno/mis-citas" variant="outline-primary">
           Ver mis citas
+        </Button>
+        <Button as={Link} to="/servicios" variant="outline-secondary">
+          Consultar catálogo
         </Button>
       </div>
 

@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button'
 import { Link } from 'react-router-dom'
 
 import TarjetaProximaCita from '../molecules/TarjetaProximaCita'
+import { rutasCitaDueno } from '../../constants/rutasDuenoCita'
 
 export default function SeccionProximasCitasDueno({ proximasCitas }) {
   if (!proximasCitas.length) {
@@ -13,7 +14,7 @@ export default function SeccionProximasCitasDueno({ proximasCitas }) {
         <p className="text-secondary mb-3">
           Cuando solicites una cita aparecerá aquí con su estado actualizado.
         </p>
-        <Button as={Link} to="/solicitar-cita" variant="primary">
+        <Button as={Link} to={rutasCitaDueno.formulario} variant="primary">
           Solicitar mi primera cita
         </Button>
       </div>

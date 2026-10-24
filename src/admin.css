@@ -6,25 +6,59 @@
 
 .admin-page .sidebar {
   min-height: 100svh;
+  max-width: 280px;
   background-color: #ffffff;
   border-right: 1px solid #e5e7eb;
 }
 
 .admin-content {
-  padding: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(1rem, 2.5vw, 2rem);
+  min-width: 0;
 }
 
-.admin-content h1 {
-  margin-bottom: 1.25rem;
+.panel-titulo {
+  margin-bottom: 0.35rem;
   color: #1f2937;
-  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem);
   font-weight: 700;
 }
 
-@media (max-width: 767.98px) {
+.panel-descripcion {
+  margin-bottom: 1.25rem;
+}
+
+.panel-marca {
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+.panel-nav .nav-link {
+  border-radius: 0.5rem;
+  color: #374151;
+  padding: 0.45rem 0.65rem;
+}
+
+.panel-nav .nav-link.active {
+  background-color: #e8efff;
+  color: #1d4ed8;
+}
+
+.panel-metrica {
+  background-color: #ffffff;
+}
+
+.panel-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+.panel-formulario-cita {
+  max-width: 720px;
+}
+
+@media (max-width: 991.98px) {
   .admin-page .sidebar {
     min-height: auto;
-    border-right: none;
-    border-bottom: 1px solid #e5e7eb;
   }
 }

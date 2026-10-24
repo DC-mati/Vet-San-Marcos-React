@@ -3,6 +3,7 @@ import { Form, Button, Alert } from 'react-bootstrap'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../../context/AuthContext'
+import { resolverDestinoTrasLogin } from '../../utils/destinoLogin'
 import { CLAVE_DEMO } from '../../data/usuariosDemo'
 
 /**
@@ -16,7 +17,7 @@ export default function FormularioLogin() {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const { login, rutaPorRol } = useAuth()
+  const { login } = useAuth()
 
   const handleSubmit = (evento) => {
     evento.preventDefault()
@@ -29,8 +30,10 @@ export default function FormularioLogin() {
       return
     }
 
-    const destino =
-      location.state?.desde || rutaPorRol(resultado.usuario.rol)
+    const destino = resolverDestinoTrasLogin(
+      location.state?.desde,
+      resultado.usuario.rol,
+    )
     navigate(destino)
   }
 

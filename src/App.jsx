@@ -7,22 +7,26 @@ import RegistroPage from './pages/RegistroPage'
 import ServiciosPage from './pages/ServiciosPage'
 import CategoriasPage from './pages/CategoriasPage'
 import DetalleServicioPage from './pages/DetalleServicioPage'
-import SolicitarCitaPage from './pages/SolicitarCitaPage'
-import ConfirmacionCitaPage from './pages/ConfirmacionCitaPage'
-import ResultadoCitaPage from './pages/ResultadoCitaPage'
+import RedireccionSolicitarCita from './pages/RedireccionSolicitarCita'
 import MisCitasPage from './pages/MisCitasPage'
 import DuenoDashboardPage from './pages/DuenoDashboardPage'
+import DuenoSolicitarCitaPage from './pages/DuenoSolicitarCitaPage'
+import DuenoConfirmacionCitaPage from './pages/DuenoConfirmacionCitaPage'
+import DuenoResultadoCitaPage from './pages/DuenoResultadoCitaPage'
 import RedireccionMisCitas from './pages/RedireccionMisCitas'
 import BlogPage from './pages/BlogPage'
 import BlogDetallePage from './pages/BlogDetallePage'
 import AdminPage from './pages/AdminPage'
 import AdminServiciosPage from './pages/AdminServiciosPage'
 import AdminCitasPage from './pages/AdminCitasPage'
+import AdminUsuariosPage from './pages/AdminUsuariosPage'
 import RecepcionPage from './pages/RecepcionPage'
-import PanelSimplePage from './pages/PanelSimplePage'
+import VeterinarioDashboardPage from './pages/VeterinarioDashboardPage'
+import TecnicoDashboardPage from './pages/TecnicoDashboardPage'
 import NosotrosPage from './pages/NosotrosPage'
 import ContactoPage from './pages/ContactoPage'
 import ScrollAlCambiarRuta from './components/ScrollAlCambiarRuta'
+import { rutasCitaDueno } from './constants/rutasDuenoCita'
 
 export default function App() {
   return (
@@ -39,18 +43,18 @@ export default function App() {
       <Route path="/categorias" element={<CategoriasPage />} />
       <Route path="/servicios/:codigo" element={<DetalleServicioPage />} />
 
-      <Route path="/solicitar-cita" element={<SolicitarCitaPage />} />
+      <Route path="/solicitar-cita" element={<RedireccionSolicitarCita />} />
       <Route
         path="/solicitar-cita/confirmacion"
-        element={<ConfirmacionCitaPage />}
+        element={<Navigate to={rutasCitaDueno.confirmacion} replace />}
       />
       <Route
         path="/solicitar-cita/exito"
-        element={<ResultadoCitaPage tipo="exito" />}
+        element={<Navigate to={rutasCitaDueno.exito} replace />}
       />
       <Route
         path="/solicitar-cita/error"
-        element={<ResultadoCitaPage tipo="error" />}
+        element={<Navigate to={rutasCitaDueno.error} replace />}
       />
       <Route path="/mis-citas" element={<RedireccionMisCitas />} />
 
@@ -67,6 +71,38 @@ export default function App() {
         element={
           <RutaProtegida rolesPermitidos={['cliente']}>
             <MisCitasPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path={rutasCitaDueno.formulario}
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <DuenoSolicitarCitaPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path={rutasCitaDueno.confirmacion}
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <DuenoConfirmacionCitaPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path={rutasCitaDueno.exito}
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <DuenoResultadoCitaPage tipo="exito" />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path={rutasCitaDueno.error}
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <DuenoResultadoCitaPage tipo="error" />
           </RutaProtegida>
         }
       />
@@ -100,6 +136,14 @@ export default function App() {
           </RutaProtegida>
         }
       />
+      <Route
+        path="/admin/usuarios"
+        element={
+          <RutaProtegida rolesPermitidos={['admin']}>
+            <AdminUsuariosPage />
+          </RutaProtegida>
+        }
+      />
 
       <Route
         path="/recepcion"
@@ -114,11 +158,7 @@ export default function App() {
         path="/veterinario"
         element={
           <RutaProtegida rolesPermitidos={['veterinario']}>
-            <PanelSimplePage
-              titulo="Panel veterinario"
-              descripcion="Vista de demostración: agenda clínica conectada al flujo de citas."
-              enlaces={[{ to: '/veterinario', texto: 'Inicio' }]}
-            />
+            <VeterinarioDashboardPage />
           </RutaProtegida>
         }
       />
@@ -127,11 +167,7 @@ export default function App() {
         path="/tecnico"
         element={
           <RutaProtegida rolesPermitidos={['tecnico']}>
-            <PanelSimplePage
-              titulo="Panel técnico"
-              descripcion="Vista de demostración para apoyo clínico y preparación de pacientes."
-              enlaces={[{ to: '/tecnico', texto: 'Inicio' }]}
-            />
+            <TecnicoDashboardPage />
           </RutaProtegida>
         }
       />

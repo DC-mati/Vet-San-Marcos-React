@@ -81,7 +81,7 @@ export default function FormularioSolicitudCita({
         La recepción confirmará o propondrá otro horario.
       </Alert>
 
-      <Form.Group className="mb-3">
+      <Form.Group className="mb-3" controlId="nombreMascota">
         <Form.Label>Nombre de la mascota</Form.Label>
         <Form.Control
           value={datos.nombreMascota}

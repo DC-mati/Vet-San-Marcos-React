@@ -6,15 +6,10 @@ import Alert from 'react-bootstrap/Alert'
 
 import PlantillaAdmin from '../components/templates/PlantillaAdmin'
 import FormularioServicio from '../components/organisms/FormularioServicio'
+import { enlacesAdmin } from '../constants/navegacionPaneles'
 import { useServicios } from '../context/ServiciosContext'
 import { formatoPrecio } from '../utils/formatoPrecio'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
-
-const enlaces = [
-  { to: '/admin', texto: 'Dashboard' },
-  { to: '/admin/servicios', texto: 'Servicios (CRUD)' },
-  { to: '/admin/citas', texto: 'Citas' },
-]
 
 export default function AdminServiciosPage() {
   useTituloPagina('Admin servicios')
@@ -22,6 +17,7 @@ export default function AdminServiciosPage() {
   const [mostrarModal, setMostrarModal] = useState(false)
   const [editando, setEditando] = useState(null)
   const [feedback, setFeedback] = useState('')
+  const [eliminarCodigo, setEliminarCodigo] = useState(null)
 
   const abrirNuevo = () => {
     setEditando(null)
@@ -45,7 +41,7 @@ export default function AdminServiciosPage() {
   }
 
   return (
-    <PlantillaAdmin titulo="Administración de servicios" enlaces={enlaces}>
+    <PlantillaAdmin titulo="Administración de servicios" enlaces={enlacesAdmin}>
       {feedback && (
         <Alert variant="info" onClose={() => setFeedback('')} dismissible>
           {feedback}
@@ -86,7 +82,7 @@ export default function AdminServiciosPage() {
                   <Button
                     size="sm"
                     variant="outline-danger"
-                    onClick={() => eliminar(s.codigo)}
+                    onClick={() => setEliminarCodigo(s.codigo)}
                   >
                     Eliminar
                   </Button>
@@ -96,6 +92,33 @@ export default function AdminServiciosPage() {
           </tbody>
         </Table>
       </div>
+
+      <Modal show={Boolean(eliminarCodigo)} onHide={() => setEliminarCodigo(null)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Eliminar servicio</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          ¿Eliminar el servicio {eliminarCodigo}? Esta acción quita el registro
+          del catálogo local.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setEliminarCodigo(null)}>
+            Cancelar
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => {
+              const resultado = eliminar(eliminarCodigo)
+              setFeedback(
+                resultado.ok ? 'Servicio eliminado.' : resultado.error,
+              )
+              setEliminarCodigo(null)
+            }}
+          >
+            Sí, eliminar
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <Modal show={mostrarModal} onHide={() => setMostrarModal(false)} size="lg">
         <Modal.Header closeButton>

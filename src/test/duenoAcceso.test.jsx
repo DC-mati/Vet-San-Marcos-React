@@ -166,7 +166,7 @@ describe('Acceso del dueño de mascota', () => {
       </Routes>,
     )
 
-    expect(screen.getByText('Luna')).toBeInTheDocument()
+    expect(screen.getAllByText('Luna').length).toBeGreaterThan(0)
     expect(screen.queryByText('Otro')).toBeNull()
   })
 
@@ -211,7 +211,7 @@ describe('Acceso del dueño de mascota', () => {
       </Routes>,
     )
 
-    expect(screen.getByText('Milo')).toBeInTheDocument()
+    expect(screen.getAllByText('Milo').length).toBeGreaterThan(0)
     expect(screen.queryByText('Kiwi')).toBeNull()
 
     cleanup()
@@ -232,7 +232,7 @@ describe('Acceso del dueño de mascota', () => {
       </Routes>,
     )
 
-    expect(screen.getByText('Kiwi')).toBeInTheDocument()
+    expect(screen.getAllByText('Kiwi').length).toBeGreaterThan(0)
     expect(screen.queryByText('Milo')).toBeNull()
 
     vista.unmount()
@@ -268,7 +268,7 @@ describe('Acceso del dueño de mascota', () => {
       </Routes>,
     )
 
-    expect(screen.getByText(/confirmada/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/confirmada/i).length).toBeGreaterThan(0)
   })
 
   it('7. administrador no entra al dashboard del dueño', () => {
@@ -277,7 +277,7 @@ describe('Acceso del dueño de mascota', () => {
     renderRutas(
       '/dueno',
       <Routes>
-        <Route path="/" element={<p>Inicio público</p>} />
+        <Route path="/admin" element={<p>Panel admin</p>} />
         <Route
           path="/dueno"
           element={
@@ -289,7 +289,7 @@ describe('Acceso del dueño de mascota', () => {
       </Routes>,
     )
 
-    expect(screen.getByText('Inicio público')).toBeInTheDocument()
+    expect(screen.getByText('Panel admin')).toBeInTheDocument()
   })
 
   it('8. dueño cierra sesión y pierde acceso', async () => {
@@ -360,7 +360,7 @@ describe('Acceso del dueño de mascota', () => {
       </Routes>,
     )
 
-    expect(screen.getByText('Nueva')).toBeInTheDocument()
+    expect(screen.getAllByText('Nueva').length).toBeGreaterThan(0)
   })
 
   it('10. citas persisten en localStorage tras recargar contexto', () => {
@@ -392,7 +392,7 @@ describe('Acceso del dueño de mascota', () => {
       </Routes>,
     )
 
-    expect(screen.getByText('Persistente')).toBeInTheDocument()
+    expect(screen.getAllByText('Persistente').length).toBeGreaterThan(0)
 
     cleanup()
 
@@ -412,7 +412,7 @@ describe('Acceso del dueño de mascota', () => {
       </Routes>,
     )
 
-    expect(screen.getByText('Persistente')).toBeInTheDocument()
+    expect(screen.getAllByText('Persistente').length).toBeGreaterThan(0)
   })
 
   it('navbar público no muestra mis citas sin sesión', () => {
