@@ -1,69 +1,215 @@
+<p align="center">
+  <img src="src/assets/logo-san-marcos.png" alt="Logo Veterinaria San Marcos" width="220" />
+</p>
+
 # Veterinaria San Marcos
 
-Aplicación web para la gestión de servicios veterinarios, solicitudes de citas y administración de la clínica en Rancagua.
+Aplicación web para la gestión de servicios veterinarios, mascotas y solicitudes de citas. Desarrollada con React, Vite y Bootstrap, ofrece una experiencia responsive y espacios de trabajo organizados según el rol de cada usuario.
 
-Desarrollada con React, Vite y Bootstrap. Incluye interfaz responsive, componentes reutilizables (Atomic Design) y persistencia local en el navegador.
+Repositorio: [Vet-San-Marcos-React](https://github.com/DC-mati/Vet-San-Marcos-React)  
+Rama de entrega: [`RamaHana`](https://github.com/DC-mati/Vet-San-Marcos-React/tree/RamaHana)
 
-Repositorio: [Vet-San-Marcos-React](https://github.com/DC-mati/Vet-San-Marcos-React)
+---
 
 ## Funcionalidades
 
-- Sitio público: inicio, catálogo de servicios, categorías, detalle, blog, contacto
-- Búsqueda y filtro por categoría en el catálogo
-- Solicitud de citas con validación, resumen y consulta de estado
-- Panel de recepción para confirmar citas o proponer otro horario
-- Panel de administración con CRUD de servicios y gestión de citas
-- Acceso por roles con cuentas de demostración
+### Sitio público
 
-## Tecnologías
+- Página de inicio
+- Catálogo de servicios con búsqueda y filtros por categoría
+- Página de categorías
+- Detalle de cada servicio
+- Blog informativo
+- Nosotros y contacto
+- Inicio de sesión y registro de dueños
 
-- React 19 y Vite 8
-- JavaScript (JSX)
-- Bootstrap 5 y React Bootstrap
-- React Router DOM
-- Context API
-- Vitest y Testing Library
+### Dueño de mascota
 
-## Requisitos
+- Dashboard personal con resumen de mascotas y citas
+- Gestión de mascotas registradas
+- Catálogo privado dentro del panel (`/dueno/catalogo`)
+- Solicitud de citas con validación y resumen
+- Confirmación de solicitudes
+- Consulta de citas propias y seguimiento de estados
 
-- Node.js 18 o superior recomendado
-- npm
+### Recepción
+
+- Panel de gestión de solicitudes
+- Confirmación de citas y cambio de estados
+- Propuesta de reprogramación de horario
+- Consulta de pacientes (mascotas registradas)
+- Filtros por fecha y estado en la agenda
+
+### Veterinario
+
+- Dashboard con indicadores de citas
+- Consulta de agenda clínica y próximas atenciones
+
+### Técnico veterinario
+
+- Dashboard de apoyo operativo
+- Consulta de agenda próxima e información operativa de citas
+
+### Administrador
+
+- Dashboard con métricas del sistema
+- CRUD de servicios del catálogo
+- Gestión de usuarios (cuentas demo y registradas)
+- Gestión de citas
+- Inventario de medicamentos con alertas de stock bajo
+- Acceso a recepción desde el panel admin (`/admin/recepcion`)
+- Reportes resumidos por estado, categorías de servicios e inventario
+
+---
+
+## Tecnologías utilizadas
+
+| Tecnología | Uso en el proyecto |
+|------------|-------------------|
+| React | Interfaz de usuario con componentes funcionales |
+| Vite | Entorno de desarrollo y build de producción |
+| JavaScript (JSX) | Lenguaje principal del frontend |
+| Bootstrap | Estilos base y sistema responsive |
+| React Bootstrap | Componentes UI (formularios, tablas, navegación) |
+| React Router | Rutas públicas, privadas y redirecciones por rol |
+| Context API | Estado compartido (auth, citas, servicios, mascotas, inventario) |
+| localStorage | Persistencia simulada de datos en el navegador |
+| Vitest | Ejecución de pruebas unitarias e integración ligera |
+| Testing Library | Renderizado y aserciones orientadas al usuario |
+| Git y GitHub | Control de versiones y trabajo colaborativo en ramas |
+
+---
+
+## Arquitectura
+
+El frontend sigue **Atomic Design** para organizar la interfaz:
+
+| Capa | Contenido |
+|------|-----------|
+| **Atoms** | Elementos mínimos reutilizables (etiquetas, entradas) |
+| **Molecules** | Combinaciones simples (tarjetas, filas, buscadores) |
+| **Organisms** | Secciones completas (header, formularios, listados) |
+| **Templates** | Layouts de panel (`PlantillaAdmin`, `PlantillaPublica`) |
+| **Pages** | Pantallas enlazadas a rutas en `App.jsx` |
+
+Otros directorios relevantes:
+
+| Carpeta | Rol |
+|---------|-----|
+| `src/data/` | Datos iniciales del catálogo (servicios, citas demo) |
+| `src/services/` | Lógica CRUD y reglas de negocio sin JSX |
+| `src/context/` | Proveedores de estado global |
+| `src/utils/` | Validaciones, fechas, precios y helpers |
+| `src/constants/` | Rutas y enlaces de navegación por rol |
+| `src/test/` | Configuración compartida de Vitest (`setup.js`) |
+
+```text
+src/
+├── components/
+│   ├── atoms/
+│   ├── molecules/
+│   ├── organisms/
+│   └── templates/
+├── pages/
+├── services/
+├── context/
+├── utils/
+├── data/
+├── constants/
+├── assets/
+└── test/
+public/          # Favicon e íconos estáticos
+```
+
+---
 
 ## Instalación
 
+Requisitos: **Node.js 18+** recomendado y **npm**.
+
 ```bash
+git clone -b RamaHana https://github.com/DC-mati/Vet-San-Marcos-React.git
+cd Vet-San-Marcos-React
 npm install
 ```
 
+---
+
 ## Ejecución
+
+Modo desarrollo:
 
 ```bash
 npm run dev
 ```
 
-Abre la URL que indica Vite (habitualmente `http://localhost:5173`).
+Abre en el navegador la URL que muestra Vite en consola (habitualmente `http://localhost:5173`).
 
-En PowerShell, si `npm` falla por políticas de scripts, usa:
+Build de producción y vista previa:
 
 ```bash
-npm.cmd run dev
+npm run build
+npm run preview
 ```
 
-## Pruebas
+Lint:
+
+```bash
+npm run lint
+```
+
+---
+
+## Pruebas unitarias
+
+La suite activa utiliza **Vitest**, **Testing Library** y el patrón **Arrange, Act, Assert** en español. Cada archivo `.test.js` o `.test.jsx` está junto al módulo que verifica.
+
+Objetivo actual: **10 pruebas** que cubren servicios críticos, utilidades y un flujo integrado de rutas.
 
 ```bash
 npm run test:run
 npm run test:cov
 ```
 
-El informe de cobertura HTML se genera en `coverage/index.html` (carpeta ignorada por Git).
+El informe HTML de cobertura se genera en `coverage/` (excluido de Git). No se publica en el repositorio.
 
-## Build y lint
+---
 
-```bash
-npm run build
-npm run lint
-```
+## Integrantes del Grupo 9
+
+| Integrante | Correo institucional |
+|------------|-------------------|
+| Hanael Echeverría | ha.echeverria@duocuc.cl |
+| Matías Soto | mat.sotoz@duocuc.cl |
+
+---
+
+## Bitácora de desarrollo
+
+Registro basado en el historial de Git del repositorio. Los enlaces apuntan a commits reales en GitHub.
+
+| Fecha | Responsable | Actividad realizada | Evidencia |
+|-------|-------------|---------------------|-----------|
+| 2026-09-22 | Matías Soto | Creación del repositorio e inicio del proyecto | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/1459572) |
+| 2026-09-22 | Hanael Echeverría | Actualización del README y documentación inicial | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/dc6d7d6) |
+| 2026-09-29 a 2026-10-12 | Matías Soto | Incorporación de assets y avance del sitio público | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/8066b49) |
+| 2026-10-13 | Matías Soto | Rama de trabajo y ajustes de título de la aplicación | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/a5bce01) |
+| 2026-10-23 | Matías Soto | Vista home de la veterinaria y pruebas asociadas | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/9d9d491) |
+| 2026-10-23 | Hanael Echeverría | Catálogo, solicitud de citas, CRUD y ampliación de pruebas | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/7095ee2) |
+| 2026-10-23 | Hanael Echeverría | Layout responsive y corrección de ancho global | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/f4c1106) |
+| 2026-10-23 | Hanael Echeverría | README público y exclusión de documentación privada | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/6b70ae9) |
+| 2026-10-23 | Hanael Echeverría | Navegación pública e enlaces internos | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/a3ff840) |
+| 2026-10-23 | Hanael Echeverría | Diseño y alineación de categorías | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/73ef16b) |
+| 2026-10-23 | Hanael Echeverría | Dashboard del dueño y mis citas privadas | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/1229212) |
+| 2026-10-23 | Hanael Echeverría | Unificación de dashboards y flujo privado del dueño | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/4f7aee1) |
+| 2026-10-23 | Hanael Echeverría | Mascotas, inventario y paneles ampliados | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/cc4bf4a) |
+| 2026-10-23 | Hanael Echeverría | Refuerzo de auth, citas y mascotas para QA | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/1b0623f) |
+| 2026-10-24 | Hanael Echeverría | Navegación admin en recepción y textos del sitio | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/a4f05df) |
+| 2026-10-24 | Hanael Echeverría | Catálogo del dueño dentro del panel privado | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/72853f5) |
+| 2026-10-24 | Hanael Echeverría | Estabilización de pruebas y localStorage en Vitest | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/5d96f92) |
+| 2026-10-24 | Hanael Echeverría | Suite reducida a 10 pruebas con formato AAA | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/fdfdc22) |
+
+---
 
 ## Cuentas de demostración
 
@@ -75,21 +221,12 @@ Contraseña común: `demo123`
 | recepcion@sanmarcos.cl | Recepción |
 | veterinario@sanmarcos.cl | Veterinario |
 | tecnico@sanmarcos.cl | Técnico |
-| camila@correo.cl | Cliente |
+| camila@correo.cl | Dueño (cliente) |
 
-## Estructura del proyecto
+---
 
-```text
-src/
-  components/   # Átomos, moléculas, organismos, plantillas
-  pages/        # Pantallas por ruta
-  data/         # Datos iniciales del catálogo
-  services/     # Operaciones CRUD (sin JSX)
-  context/      # Estado compartido
-  utils/        # Validaciones, formato de precios, reglas de negocio
-  test/         # Configuración de pruebas
-```
+## Limitaciones técnicas
 
-## Notas
-
-Los datos de trabajo se guardan en `localStorage` del navegador. No hay servidor backend en este repositorio. La autenticación por correo y contraseña demo sirve para probar roles en la interfaz.
+- No hay backend ni base de datos remota. Los datos persisten en `localStorage` del navegador.
+- La autenticación es simulada con cuentas demo para evaluar roles en la interfaz.
+- No hay pagos en línea ni notificaciones por correo o SMS.
