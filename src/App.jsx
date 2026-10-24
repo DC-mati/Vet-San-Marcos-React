@@ -20,7 +20,11 @@ import AdminPage from './pages/AdminPage'
 import AdminServiciosPage from './pages/AdminServiciosPage'
 import AdminCitasPage from './pages/AdminCitasPage'
 import AdminUsuariosPage from './pages/AdminUsuariosPage'
+import AdminInventarioPage from './pages/AdminInventarioPage'
+import AdminReportesPage from './pages/AdminReportesPage'
+import DuenoMascotasPage from './pages/DuenoMascotasPage'
 import RecepcionPage from './pages/RecepcionPage'
+import RecepcionPacientesPage from './pages/RecepcionPacientesPage'
 import VeterinarioDashboardPage from './pages/VeterinarioDashboardPage'
 import TecnicoDashboardPage from './pages/TecnicoDashboardPage'
 import NosotrosPage from './pages/NosotrosPage'
@@ -71,6 +75,14 @@ export default function App() {
         element={
           <RutaProtegida rolesPermitidos={['cliente']}>
             <MisCitasPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/dueno/mis-mascotas"
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <DuenoMascotasPage />
           </RutaProtegida>
         }
       />
@@ -144,12 +156,36 @@ export default function App() {
           </RutaProtegida>
         }
       />
+      <Route
+        path="/admin/inventario"
+        element={
+          <RutaProtegida rolesPermitidos={['admin']}>
+            <AdminInventarioPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/admin/reportes"
+        element={
+          <RutaProtegida rolesPermitidos={['admin']}>
+            <AdminReportesPage />
+          </RutaProtegida>
+        }
+      />
 
       <Route
         path="/recepcion"
         element={
           <RutaProtegida rolesPermitidos={['recepcion', 'admin']}>
             <RecepcionPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/recepcion/pacientes"
+        element={
+          <RutaProtegida rolesPermitidos={['recepcion', 'admin']}>
+            <RecepcionPacientesPage />
           </RutaProtegida>
         }
       />

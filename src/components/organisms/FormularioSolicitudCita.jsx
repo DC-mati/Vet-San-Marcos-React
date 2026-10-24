@@ -19,6 +19,7 @@ export default function FormularioSolicitudCita({
   codigoInicial = '',
   valoresIniciales = {},
   bloquearDatosCuenta = false,
+  mascotasRegistradas = [],
   onContinuar,
 }) {
   const { servicios } = useServicios()
@@ -33,6 +34,7 @@ export default function FormularioSolicitudCita({
     telefono: '',
     observaciones: '',
     fueraHorario: false,
+    mascotaId: '',
     ...valoresIniciales,
   })
   const [errores, setErrores] = useState({})
@@ -58,6 +60,26 @@ export default function FormularioSolicitudCita({
     setErrores((prev) => ({ ...prev, [campo]: '' }))
   }
 
+  const elegirMascota = (id) => {
+    if (!id) {
+      actualizarCampo('mascotaId', '')
+      return
+    }
+
+    const mascota = mascotasRegistradas.find((m) => m.id === id)
+    if (!mascota) {
+      return
+    }
+
+    setDatos((prev) => ({
+      ...prev,
+      mascotaId: id,
+      nombreMascota: mascota.nombre,
+      especie: mascota.especie,
+    }))
+    setErrores((prev) => ({ ...prev, nombreMascota: '', especie: '' }))
+  }
+
   const enviar = (evento) => {
     evento.preventDefault()
     const nuevosErrores = validarSolicitudCita(datos)
@@ -81,12 +103,34 @@ export default function FormularioSolicitudCita({
         La recepción confirmará o propondrá otro horario.
       </Alert>
 
+      {mascotasRegistradas.length > 0 && (
+        <Form.Group className="mb-3" controlId="mascotaRegistrada">
+          <Form.Label>Mascota registrada</Form.Label>
+          <Form.Select
+            value={datos.mascotaId}
+            onChange={(e) => elegirMascota(e.target.value)}
+          >
+            <option value="">Selecciona una mascota...</option>
+            {mascotasRegistradas.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.nombre} ({m.especie})
+              </option>
+            ))}
+          </Form.Select>
+          <Form.Text className="text-muted">
+            También puedes escribir una mascota nueva abajo si aún no la
+            registraste.
+          </Form.Text>
+        </Form.Group>
+      )}
+
       <Form.Group className="mb-3" controlId="nombreMascota">
         <Form.Label>Nombre de la mascota</Form.Label>
         <Form.Control
           value={datos.nombreMascota}
           onChange={(e) => actualizarCampo('nombreMascota', e.target.value)}
           isInvalid={Boolean(errores.nombreMascota)}
+          readOnly={Boolean(datos.mascotaId)}
         />
         <Form.Control.Feedback type="invalid">
           {errores.nombreMascota}
@@ -99,6 +143,7 @@ export default function FormularioSolicitudCita({
           value={datos.especie}
           onChange={(e) => actualizarCampo('especie', e.target.value)}
           isInvalid={Boolean(errores.especie)}
+          disabled={Boolean(datos.mascotaId)}
         >
           <option value="Perro">Perro</option>
           <option value="Gato">Gato</option>

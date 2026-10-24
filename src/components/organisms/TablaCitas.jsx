@@ -10,6 +10,7 @@ import EtiquetaEstadoCita from '../atoms/EtiquetaEstadoCita'
 import { formatoPrecio } from '../../utils/formatoPrecio'
 import {
   puedeConfirmarCita,
+  puedeMarcarRealizada,
   puedeProponerHorario,
   validarPropuestaHorario,
 } from '../../utils/citasEstados'
@@ -20,6 +21,7 @@ export default function TablaCitas({
   onConfirmar,
   onProponer,
   onEliminar,
+  onMarcarRealizada,
   mensajeVacio = 'No hay citas registradas.',
 }) {
   if (!citas.length) {
@@ -41,6 +43,7 @@ export default function TablaCitas({
             onConfirmar={onConfirmar}
             onProponer={onProponer}
             onEliminar={onEliminar}
+            onMarcarRealizada={onMarcarRealizada}
           />
         ))}
       </div>
@@ -67,10 +70,11 @@ export default function TablaCitas({
                 modo={modo}
                 onConfirmar={onConfirmar}
                 onProponer={onProponer}
-                onEliminar={onEliminar}
-              />
-            ))}
-          </tbody>
+              onEliminar={onEliminar}
+              onMarcarRealizada={onMarcarRealizada}
+            />
+          ))}
+        </tbody>
         </Table>
       </div>
     </>
@@ -83,6 +87,7 @@ function TarjetaCitaMovil({
   onConfirmar,
   onProponer,
   onEliminar,
+  onMarcarRealizada,
 }) {
   return (
     <Card className="border-0 shadow-sm">
@@ -105,6 +110,7 @@ function TarjetaCitaMovil({
             onConfirmar={onConfirmar}
             onProponer={onProponer}
             onEliminar={onEliminar}
+            onMarcarRealizada={onMarcarRealizada}
           />
         )}
       </Card.Body>
@@ -118,6 +124,7 @@ function FilaCitaAdmin({
   onConfirmar,
   onProponer,
   onEliminar,
+  onMarcarRealizada,
 }) {
   return (
     <tr>
@@ -155,6 +162,7 @@ function FilaCitaAdmin({
             onConfirmar={onConfirmar}
             onProponer={onProponer}
             onEliminar={onEliminar}
+            onMarcarRealizada={onMarcarRealizada}
           />
         </td>
       )}
@@ -168,6 +176,7 @@ function AccionesCita({
   onConfirmar,
   onProponer,
   onEliminar,
+  onMarcarRealizada,
 }) {
   const [fechaPropuesta, setFechaPropuesta] = useState('')
   const [horaPropuesta, setHoraPropuesta] = useState('')
@@ -176,6 +185,7 @@ function AccionesCita({
 
   const confirmarDisponible = puedeConfirmarCita(cita)
   const proponerDisponible = puedeProponerHorario(cita)
+  const realizarDisponible = puedeMarcarRealizada(cita)
 
   const enviarPropuesta = () => {
     const validacion = validarPropuestaHorario(fechaPropuesta, horaPropuesta)
@@ -196,6 +206,16 @@ function AccionesCita({
           onClick={() => onConfirmar?.(cita.id)}
         >
           Confirmar
+        </Button>
+      )}
+
+      {realizarDisponible && onMarcarRealizada && (
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => onMarcarRealizada(cita.id)}
+        >
+          Marcar realizada
         </Button>
       )}
 

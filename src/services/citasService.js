@@ -1,5 +1,6 @@
 import { citasIniciales } from '../data/catalogoInicial'
 import { CLAVES, guardarLista, leerLista } from '../utils/storage'
+import { ESTADOS_CITA, tipoVisualPorEstado } from '../utils/estadosCita'
 
 /**
  * Añade correoDueno si un registro antiguo solo tenía el campo correo.
@@ -9,16 +10,23 @@ function migrarCompatibilidadCitas(lista) {
   let cambio = false
 
   const normalizada = lista.map((cita) => {
-    if (cita.correoDueno) {
-      return cita
-    }
+    let item = { ...cita }
 
-    if (cita.correo) {
+    if (!item.correoDueno && item.correo) {
       cambio = true
-      return { ...cita, correoDueno: cita.correo }
+      item = { ...item, correoDueno: item.correo }
     }
 
-    return cita
+    if (!item.tutorCorreo && item.correoDueno) {
+      cambio = true
+      item = { ...item, tutorCorreo: item.correoDueno }
+    }
+
+    if (!item.mascotaId) {
+      item = { ...item, mascotaId: item.mascotaId || '' }
+    }
+
+    return item
   })
 
   if (cambio) {
@@ -73,13 +81,16 @@ export function crearCita(datos) {
     codigoServicio: datos.codigoServicio,
     servicio: datos.nombreServicio,
     correoDueno: datos.correo,
+    tutorCorreo: datos.correo,
+    mascotaId: datos.mascotaId || '',
+    motivo: (datos.observaciones || '').trim(),
     nombreDueno: datos.nombreDueno,
     telefono: datos.telefono || '',
     observaciones: datos.observaciones || '',
     fueraHorario: Boolean(datos.fueraHorario),
     precioEstimado: Number(datos.precioEstimado) || 0,
-    estado: 'Pendiente',
-    tipo: 'warning',
+    estado: ESTADOS_CITA.pendiente,
+    tipo: tipoVisualPorEstado(ESTADOS_CITA.pendiente),
     propuestaFecha: '',
     propuestaHora: '',
   }
@@ -98,19 +109,11 @@ export function actualizarEstadoCita(id, estado, extras = {}) {
     return { ok: false, error: 'Cita no encontrada.' }
   }
 
-  const tipoPorEstado = {
-    Confirmada: 'ok',
-    Pendiente: 'warning',
-    'En espera': 'info',
-    Rechazada: 'danger',
-    'Propuesta de horario': 'info',
-  }
-
   const actualizada = {
     ...lista[indice],
     ...extras,
     estado,
-    tipo: tipoPorEstado[estado] || lista[indice].tipo,
+    tipo: tipoVisualPorEstado(estado) || lista[indice].tipo,
   }
 
   const copia = [...lista]
@@ -121,7 +124,7 @@ export function actualizarEstadoCita(id, estado, extras = {}) {
 
 /** Recepción propone otra fecha u hora. */
 export function proponerHorarioCita(id, propuestaFecha, propuestaHora) {
-  return actualizarEstadoCita(id, 'Propuesta de horario', {
+  return actualizarEstadoCita(id, ESTADOS_CITA.propuesta, {
     propuestaFecha,
     propuestaHora,
   })

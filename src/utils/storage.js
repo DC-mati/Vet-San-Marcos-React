@@ -32,6 +32,8 @@ export const CLAVES = {
   servicios: 'vet_data_services',
   citas: 'vet_data_appointments',
   medicamentos: 'vet_data_stock',
+  mascotas: 'vet_data_pets',
   usuarios: 'vet_data_users',
+  usuariosAdmin: 'vet_usuarios_admin',
   sesion: 'vet_sesion',
 }

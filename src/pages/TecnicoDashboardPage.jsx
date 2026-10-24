@@ -8,12 +8,16 @@ import TarjetaMetricaPanel from '../components/molecules/TarjetaMetricaPanel'
 import TablaCitas from '../components/organisms/TablaCitas'
 import { enlacesTecnico } from '../constants/navegacionPaneles'
 import { useCitas } from '../context/CitasContext'
+import { useInventario } from '../context/InventarioContext'
+import { UMBRAL_STOCK_DEMO } from '../services/inventarioService'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
 import { listarProximasCitas } from '../utils/citasDueno'
 
 export default function TecnicoDashboardPage() {
   useTituloPagina('Panel técnico')
   const { citas } = useCitas()
+  const { stockBajo } = useInventario()
+  const alertasStock = stockBajo()
 
   const hoy = useMemo(() => new Date(), [])
 
@@ -53,6 +57,13 @@ export default function TecnicoDashboardPage() {
           />
         </Col>
       </Row>
+
+      {alertasStock.length > 0 && (
+        <Alert variant="warning">
+          {alertasStock.length} productos con stock ≤ {UMBRAL_STOCK_DEMO}{' '}
+          (umbral demo, no viene del Excel).
+        </Alert>
+      )}
 
       <h2 className="h5 mb-3">Agenda próxima</h2>
       <TablaCitas

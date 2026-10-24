@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
@@ -11,6 +11,7 @@ import { enlacesPanelDueno } from '../constants/enlacesDueno'
 import { rutasCitaDueno } from '../constants/rutasDuenoCita'
 import { useAuth } from '../context/AuthContext'
 import { useCitas } from '../context/CitasContext'
+import { useMascotas } from '../context/MascotasContext'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
 import {
   filtrarCitasPorCorreo,
@@ -22,6 +23,13 @@ export default function DuenoDashboardPage() {
   useTituloPagina('Mi panel')
   const { usuario } = useAuth()
   const { citas } = useCitas()
+  const { mascotas, recargar } = useMascotas()
+
+  useEffect(() => {
+    if (usuario?.correo) {
+      recargar(usuario.correo)
+    }
+  }, [usuario?.correo, recargar])
 
   const citasDelDueno = useMemo(
     () => filtrarCitasPorCorreo(citas, usuario?.correo),
@@ -50,21 +58,28 @@ export default function DuenoDashboardPage() {
       </header>
 
       <Row className="g-3 mb-4">
-        <Col sm={6} lg={4}>
+        <Col sm={6} lg={3}>
+          <TarjetaResumenDueno
+            titulo="Mis mascotas"
+            valor={mascotas.length}
+            descripcion="Registradas en tu cuenta"
+          />
+        </Col>
+        <Col sm={6} lg={3}>
           <TarjetaResumenDueno
             titulo="Próximas citas"
             valor={resumen.proximas}
             descripcion="Con fecha hoy o posterior"
           />
         </Col>
-        <Col sm={6} lg={4}>
+        <Col sm={6} lg={3}>
           <TarjetaResumenDueno
             titulo="Citas pendientes"
             valor={resumen.pendientes}
             descripcion="Esperando confirmación de recepción"
           />
         </Col>
-        <Col sm={12} lg={4}>
+        <Col sm={12} lg={3}>
           <TarjetaResumenDueno
             titulo="Citas confirmadas"
             valor={resumen.confirmadas}
@@ -76,6 +91,9 @@ export default function DuenoDashboardPage() {
       <div className="d-flex flex-wrap gap-2 mb-4">
         <Button as={Link} to={rutasCitaDueno.formulario} variant="primary">
           Solicitar una cita
+        </Button>
+        <Button as={Link} to="/dueno/mis-mascotas" variant="outline-primary">
+          Mis mascotas
         </Button>
         <Button as={Link} to="/dueno/mis-citas" variant="outline-primary">
           Ver mis citas

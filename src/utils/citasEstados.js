@@ -1,11 +1,20 @@
+import { ESTADOS_CITA } from './estadosCita'
+
 /** Estados finales donde no se confirma ni reprograma. */
-const ESTADOS_CERRADOS = ['Cancelada', 'Rechazada']
+const ESTADOS_CERRADOS = [
+  ESTADOS_CITA.cancelada,
+  ESTADOS_CITA.rechazada,
+  ESTADOS_CITA.realizada,
+]
 
 export function puedeConfirmarCita(cita) {
   if (!cita) {
     return false
   }
-  return cita.estado === 'Pendiente' || cita.estado === 'Propuesta de horario'
+  return (
+    cita.estado === ESTADOS_CITA.pendiente
+    || cita.estado === ESTADOS_CITA.propuesta
+  )
 }
 
 export function puedeProponerHorario(cita) {
@@ -15,7 +24,14 @@ export function puedeProponerHorario(cita) {
   if (ESTADOS_CERRADOS.includes(cita.estado)) {
     return false
   }
-  return cita.estado === 'Pendiente' || cita.estado === 'Confirmada'
+  return (
+    cita.estado === ESTADOS_CITA.pendiente
+    || cita.estado === ESTADOS_CITA.confirmada
+  )
+}
+
+export function puedeMarcarRealizada(cita) {
+  return cita?.estado === ESTADOS_CITA.confirmada
 }
 
 /**
@@ -47,10 +63,10 @@ export function validarPropuestaHorario(fecha, hora) {
 /** Prioriza pendientes y luego ordena por fecha. */
 export function ordenarCitasRecepcion(citas) {
   const peso = (estado) => {
-    if (estado === 'Pendiente') {
+    if (estado === ESTADOS_CITA.pendiente) {
       return 0
     }
-    if (estado === 'Propuesta de horario') {
+    if (estado === ESTADOS_CITA.propuesta) {
       return 1
     }
     return 2

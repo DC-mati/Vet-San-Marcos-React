@@ -9,12 +9,16 @@ import TarjetaMetricaPanel from '../components/molecules/TarjetaMetricaPanel'
 import { enlacesAdmin } from '../constants/navegacionPaneles'
 import { useServicios } from '../context/ServiciosContext'
 import { useCitas } from '../context/CitasContext'
+import { useInventario } from '../context/InventarioContext'
+import { contarMascotasActivas } from '../services/mascotasService'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
 
 export default function AdminPage() {
   useTituloPagina('Admin')
   const { servicios } = useServicios()
   const { citas } = useCitas()
+  const { productos } = useInventario()
+  const mascotas = contarMascotasActivas()
 
   return (
     <PlantillaAdmin
@@ -30,11 +34,25 @@ export default function AdminPage() {
             descripcion="Incluye altas y ediciones locales"
           />
         </Col>
-        <Col sm={6} lg={4}>
+        <Col sm={6} lg={3}>
           <TarjetaMetricaPanel
             titulo="Citas registradas"
             valor={citas.length}
             descripcion="Todas las solicitudes en localStorage"
+          />
+        </Col>
+        <Col sm={6} lg={3}>
+          <TarjetaMetricaPanel
+            titulo="Mascotas activas"
+            valor={mascotas}
+            descripcion="Registradas por dueños"
+          />
+        </Col>
+        <Col sm={6} lg={3}>
+          <TarjetaMetricaPanel
+            titulo="Productos inventario"
+            valor={productos.length}
+            descripcion="Catálogo oficial de medicamentos"
           />
         </Col>
       </Row>
