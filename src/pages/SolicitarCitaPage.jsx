@@ -20,7 +20,8 @@ export default function SolicitarCitaPage() {
 
   return (
     <PlantillaPublica>
-      <Container className="py-5" style={{ maxWidth: 720 }}>
+      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
+        <div className="mx-auto" style={{ maxWidth: 720 }}>
         <h1 className="mb-4">Solicitud de cita veterinaria</h1>
         <FormularioSolicitudCita
           codigoInicial={codigo}
@@ -30,6 +31,7 @@ export default function SolicitarCitaPage() {
           }}
           onContinuar={continuar}
         />
+        </div>
       </Container>
     </PlantillaPublica>
   )

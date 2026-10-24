@@ -14,7 +14,7 @@ export default function BlogDetallePage() {
   if (!entrada) {
     return (
       <PlantillaPublica>
-        <Container className="py-5">
+        <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
           <p>Entrada no encontrada.</p>
           <Button as={Link} to="/blog">
             Volver al blog
@@ -26,14 +26,16 @@ export default function BlogDetallePage() {
 
   return (
     <PlantillaPublica>
-      <Container className="py-5" style={{ maxWidth: 720 }}>
-        <p className="text-muted">{entrada.fecha}</p>
-        <h1>{entrada.titulo}</h1>
-        <p className="lead">{entrada.resumen}</p>
-        <p>{entrada.contenido}</p>
-        <Button as={Link} to="/blog" variant="outline-primary">
-          Volver
-        </Button>
+      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
+        <div className="mx-auto" style={{ maxWidth: 720 }}>
+          <p className="text-muted">{entrada.fecha}</p>
+          <h1>{entrada.titulo}</h1>
+          <p className="lead">{entrada.resumen}</p>
+          <p>{entrada.contenido}</p>
+          <Button as={Link} to="/blog" variant="outline-primary">
+            Volver
+          </Button>
+        </div>
       </Container>
     </PlantillaPublica>
   )

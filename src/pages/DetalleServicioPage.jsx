@@ -19,7 +19,7 @@ export default function DetalleServicioPage() {
   if (!servicio) {
     return (
       <PlantillaPublica>
-        <Container className="py-5">
+        <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
           <Alert variant="warning">Servicio no encontrado.</Alert>
           <Button as={Link} to="/servicios" variant="primary">
             Volver al catálogo
@@ -31,7 +31,7 @@ export default function DetalleServicioPage() {
 
   return (
     <PlantillaPublica>
-      <Container className="py-5">
+      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
         <p className="text-muted mb-1">{servicio.codigo}</p>
         <h1>{servicio.nombre}</h1>
         <p className="lead">{servicio.categoria}</p>

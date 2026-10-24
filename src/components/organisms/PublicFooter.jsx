@@ -6,7 +6,7 @@ import logo from '../../assets/logo-san-marcos.png';
 export default function PublicFooter() {
   return (
     <footer className="home-footer">
-      <Container>
+      <Container fluid="xxl" className="px-3 px-lg-4">
         <div className="home-footer__grid">
           <div>
             <img

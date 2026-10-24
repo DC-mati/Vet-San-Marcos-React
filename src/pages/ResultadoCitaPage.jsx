@@ -15,7 +15,8 @@ export default function ResultadoCitaPage({ tipo = 'exito' }) {
 
   return (
     <PlantillaPublica>
-      <Container className="py-5 text-center" style={{ maxWidth: 560 }}>
+      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
+        <div className="mx-auto text-center" style={{ maxWidth: 560 }}>
         <Alert variant={esExito ? 'success' : 'danger'}>
           {esExito
             ? 'Tu solicitud fue registrada correctamente.'
@@ -37,6 +38,7 @@ export default function ResultadoCitaPage({ tipo = 'exito' }) {
           <Button as={Link} to="/" variant="outline-secondary">
             Inicio
           </Button>
+        </div>
         </div>
       </Container>
     </PlantillaPublica>

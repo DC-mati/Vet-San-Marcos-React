@@ -90,7 +90,7 @@ export default function ContactSection() {
       id="contacto"
       className="home-section home-contact"
     >
-      <Container>
+      <Container fluid="xxl" className="px-3 px-lg-4">
         <div className="home-contact__grid">
           <div>
             <p className="home-eyebrow">Estamos para ayudarte</p>

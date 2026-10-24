@@ -25,7 +25,7 @@ export default function MisCitasPage() {
 
   return (
     <PlantillaPublica>
-      <Container className="py-5">
+      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
         <h1 className="mb-3">Mis citas</h1>
         <p className="text-secondary">
           Ingresa el mismo correo que usaste al solicitar la cita para ver el

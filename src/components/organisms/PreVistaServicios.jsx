@@ -9,7 +9,7 @@ import ServicePreviewCard from '../molecules/ServiciosPreviewCard'
 export default function ServicesPreview({ services }) {
   return (
     <section id="servicios" className="home-section home-section--soft">
-      <Container>
+      <Container fluid="xxl" className="px-3 px-lg-4">
         <div className="home-section-heading">
           <p className="home-eyebrow">Nuestros servicios</p>
           <h2>Servicios veterinarios</h2>

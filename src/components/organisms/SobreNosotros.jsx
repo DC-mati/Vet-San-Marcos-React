@@ -5,7 +5,7 @@ import logo from '../../assets/logo-san-marcos.png';
 export default function AboutSection() {
   return (
     <section id="nosotros" className="home-section">
-      <Container>
+      <Container fluid="xxl" className="px-3 px-lg-4">
         <div className="home-about__grid">
           <div className="home-about__visual">
             <img

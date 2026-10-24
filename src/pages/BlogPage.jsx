@@ -11,7 +11,7 @@ export default function BlogPage() {
 
   return (
     <PlantillaPublica>
-      <Container className="py-5">
+      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
         <h1 className="mb-4">Blog veterinario</h1>
         <div className="row g-4">
           {blogEntradas.map((entrada) => (

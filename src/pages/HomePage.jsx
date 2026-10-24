@@ -6,7 +6,6 @@ import ContactSection from '../components/organisms/Contacto'
 import PublicFooter from '../components/organisms/PublicFooter'
 
 import { useServicios } from '../context/ServiciosContext'
-import '../Homecss.css'
 
 export default function HomePage() {
   const { servicios } = useServicios()
@@ -16,7 +15,7 @@ export default function HomePage() {
     <>
       <PublicHeader />
 
-      <main>
+      <main className="site-main page-public">
         <HomeHero />
         <AboutSection />
         <ServicesPreview services={destacados} />

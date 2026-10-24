@@ -34,7 +34,8 @@ export default function ConfirmacionCitaPage() {
 
   return (
     <PlantillaPublica>
-      <Container className="py-5" style={{ maxWidth: 640 }}>
+      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
+        <div className="mx-auto" style={{ maxWidth: 640 }}>
         <h1 className="mb-3">Resumen de la solicitud</h1>
         <p className="text-secondary">
           Revisa los datos antes de enviar. La cita quedará en estado
@@ -64,6 +65,7 @@ export default function ConfirmacionCitaPage() {
         <Button as={Link} to="/solicitar-cita" variant="outline-secondary">
           Editar datos
         </Button>
+        </div>
       </Container>
     </PlantillaPublica>
   )

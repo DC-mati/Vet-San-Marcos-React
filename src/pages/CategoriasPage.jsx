@@ -12,7 +12,7 @@ export default function CategoriasPage() {
 
   return (
     <PlantillaPublica>
-      <Container className="py-5">
+      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
         <h1 className="mb-4">Categorías de servicios</h1>
         <ListGroup>
           {categorias.map((cat) => (

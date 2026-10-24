@@ -29,7 +29,7 @@ export default function ServiciosPage() {
 
   return (
     <PlantillaPublica>
-      <Container className="py-5">
+      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
         <h1 className="mb-2">Catálogo de servicios</h1>
         <p className="text-secondary mb-4">
           {servicios.length} servicios veterinarios oficiales de San Marcos,

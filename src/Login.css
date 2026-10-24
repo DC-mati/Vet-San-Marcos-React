@@ -1,7 +1,57 @@
+/**
+ * Login a pantalla completa: el fondo cubre el viewport, la tarjeta queda centrada.
+ */
+
 .login-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100svh;
+  padding: clamp(1rem, 4vw, 2rem);
   background-image: url('./assets/logo-veterinaria.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  min-height: 100vh;
+}
+
+.login-page__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgb(15 27 45 / 55%) 0%,
+    rgb(37 99 235 / 35%) 100%
+  );
+  pointer-events: none;
+}
+
+.login-page__inner {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 440px);
+}
+
+.login-card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 1.25rem 2.5rem rgb(15 27 45 / 25%);
+}
+
+.login-card .card-body {
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.login-card .card-title {
+  color: var(--vsm-ink, #1f2937);
+  font-weight: 700;
+}
+
+@media (max-height: 640px) {
+  .login-page {
+    align-items: flex-start;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
 }
