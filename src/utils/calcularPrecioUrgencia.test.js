@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import {
   RECARGO_URGENCIA_FUERA_HORARIO,
   calcularPrecioUrgencia,
@@ -6,17 +7,19 @@ import {
 } from './calcularPrecioUrgencia'
 
 describe('calcularPrecioUrgencia', () => {
-  it('devuelve el precio base sin recargo', () => {
-    expect(calcularPrecioUrgencia(25000, false)).toBe(25000)
-  })
+  it('calcula precio base recargo fuera de horario y servicio de urgencia', () => {
+    // Arrange: precio de consulta y servicio SV002
+    const precioBase = 25000
+    const servicioUrgencia = { codigo: 'SV002' }
 
-  it('suma el recargo una sola vez fuera de horario', () => {
-    expect(calcularPrecioUrgencia(25000, true)).toBe(
-      25000 + RECARGO_URGENCIA_FUERA_HORARIO,
-    )
-  })
+    // Act: reglas de precio del catálogo
+    const normal = calcularPrecioUrgencia(precioBase, false)
+    const fueraHorario = calcularPrecioUrgencia(precioBase, true)
+    const esUrgencia = esServicioUrgencia(servicioUrgencia)
 
-  it('detecta el servicio SV002 como urgencia', () => {
-    expect(esServicioUrgencia({ codigo: 'SV002' })).toBe(true)
+    // Assert: montos y detección de urgencia
+    expect(normal).toBe(precioBase)
+    expect(fueraHorario).toBe(precioBase + RECARGO_URGENCIA_FUERA_HORARIO)
+    expect(esUrgencia).toBe(true)
   })
 })

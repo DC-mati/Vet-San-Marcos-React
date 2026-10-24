@@ -12,41 +12,27 @@ beforeEach(() => {
 })
 
 describe('mascotasService', () => {
-  it('registra mascota ligada al tutor', () => {
-    const resultado = crearMascota({
+  it('registra mascotas por tutor y permite desactivar sin borrar', () => {
+    // Arrange: dos tutores distintos
+    const correoA = 'uno@correo.cl'
+    const correoB = 'dos@correo.cl'
+
+    // Act: altas y desactivación
+    const mascotaA = crearMascota({
       nombre: 'Luna',
       especie: 'Perro',
-      tutorCorreo: 'camila@correo.cl',
+      tutorCorreo: correoA,
     })
+    crearMascota({ nombre: 'Michi', especie: 'Gato', tutorCorreo: correoB })
+    desactivarMascota(mascotaA.mascota.id, correoA)
+    const activasA = obtenerMascotasPorTutor(correoA)
+    const activasB = obtenerMascotasPorTutor(correoB)
+    const historial = JSON.parse(localStorage.getItem(CLAVES.mascotas))
 
-    expect(resultado.ok).toBe(true)
-    expect(obtenerMascotasPorTutor('camila@correo.cl')).toHaveLength(1)
-  })
-
-  it('no mezcla mascotas de dos tutores', () => {
-    crearMascota({
-      nombre: 'A',
-      tutorCorreo: 'uno@correo.cl',
-    })
-    crearMascota({
-      nombre: 'B',
-      tutorCorreo: 'dos@correo.cl',
-    })
-
-    expect(obtenerMascotasPorTutor('uno@correo.cl')[0].nombre).toBe('A')
-    expect(obtenerMascotasPorTutor('dos@correo.cl')[0].nombre).toBe('B')
-  })
-
-  it('desactiva sin borrar registro', () => {
-    const { mascota } = crearMascota({
-      nombre: 'Kiwi',
-      tutorCorreo: 'camila@correo.cl',
-    })
-
-    desactivarMascota(mascota.id, 'camila@correo.cl')
-    expect(obtenerMascotasPorTutor('camila@correo.cl')).toHaveLength(0)
-
-    const todas = JSON.parse(localStorage.getItem(CLAVES.mascotas))
-    expect(todas[0].activo).toBe(false)
+    // Assert: aislamiento por tutor y persistencia
+    expect(mascotaA.ok).toBe(true)
+    expect(activasA).toHaveLength(0)
+    expect(activasB[0].nombre).toBe('Michi')
+    expect(historial[0].activo).toBe(false)
   })
 })

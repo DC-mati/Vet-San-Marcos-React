@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
 import {
+  actualizarServicio,
   buscarServicios,
   crearServicio,
   eliminarServicio,
+  filtrarServiciosPorCategoria,
+  obtenerCategorias,
   obtenerServicioPorCodigo,
   obtenerTodosServicios,
   reiniciarServicios,
@@ -15,45 +18,38 @@ beforeEach(() => {
 })
 
 describe('serviciosService', () => {
-  it('carga 31 servicios iniciales', () => {
-    expect(obtenerTodosServicios()).toHaveLength(31)
-  })
-
-  it('obtiene un servicio por código', () => {
-    const servicio = obtenerServicioPorCodigo('SV001')
-    expect(servicio?.nombre).toBe('Consulta general')
-  })
-
-  it('busca por nombre', () => {
-    const resultados = buscarServicios('hemograma')
-    expect(resultados.some((s) => s.codigo === 'EX001')).toBe(true)
-  })
-
-  it('crea un servicio nuevo', () => {
-    const resultado = crearServicio({
+  it('consulta busca filtra crea actualiza y elimina servicios', () => {
+    // Arrange: datos de un servicio temporal
+    const nuevo = {
       codigo: 'ZZ999',
       categoria: 'Otros',
-      nombre: 'Prueba',
+      nombre: 'Prueba QA',
       especie: 'Perro',
       duracion: '10 min',
       precio: 1000,
       observaciones: '',
-    })
-    expect(resultado.ok).toBe(true)
-    expect(obtenerServicioPorCodigo('ZZ999')).toBeTruthy()
-  })
+    }
 
-  it('elimina un servicio', () => {
-    crearServicio({
-      codigo: 'ZZ998',
-      categoria: 'Otros',
-      nombre: 'Borrar',
-      especie: 'Gato',
-      duracion: '5 min',
-      precio: 2000,
-      observaciones: '',
-    })
-    eliminarServicio('ZZ998')
-    expect(obtenerServicioPorCodigo('ZZ998')).toBeNull()
+    // Act: flujo CRUD del catálogo administrable
+    const totalInicial = obtenerTodosServicios()
+    const categorias = obtenerCategorias()
+    const porCategoria = filtrarServiciosPorCategoria('Consultas')
+    const busqueda = buscarServicios('hemograma')
+    const alta = crearServicio(nuevo)
+    const duplicado = crearServicio(nuevo)
+    const edicion = actualizarServicio('ZZ999', { precio: 1500 })
+    eliminarServicio('ZZ999')
+    const borrado = obtenerServicioPorCodigo('ZZ999')
+
+    // Assert: reglas del servicio de catálogo
+    expect(totalInicial).toHaveLength(31)
+    expect(categorias).toContain('Consultas')
+    expect(porCategoria.every((s) => s.categoria === 'Consultas')).toBe(true)
+    expect(busqueda.some((s) => s.codigo === 'EX001')).toBe(true)
+    expect(alta.ok).toBe(true)
+    expect(duplicado.ok).toBe(false)
+    expect(edicion.servicio.precio).toBe(1500)
+    expect(borrado).toBeNull()
+    expect(obtenerServicioPorCodigo('SV001')?.nombre).toBe('Consulta general')
   })
 })
