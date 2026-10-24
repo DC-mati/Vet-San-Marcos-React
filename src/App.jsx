@@ -19,11 +19,18 @@ import AdminCitasPage from './pages/AdminCitasPage'
 import RecepcionPage from './pages/RecepcionPage'
 import ClientePage from './pages/ClientePage'
 import PanelSimplePage from './pages/PanelSimplePage'
+import NosotrosPage from './pages/NosotrosPage'
+import ContactoPage from './pages/ContactoPage'
+import ScrollAlCambiarRuta from './components/ScrollAlCambiarRuta'
 
 export default function App() {
   return (
-    <Routes>
+    <>
+      <ScrollAlCambiarRuta />
+      <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/nosotros" element={<NosotrosPage />} />
+      <Route path="/contacto" element={<ContactoPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/registro" element={<RegistroPage />} />
 
@@ -98,7 +105,7 @@ export default function App() {
           <RutaProtegida rolesPermitidos={['veterinario']}>
             <PanelSimplePage
               titulo="Panel veterinario"
-              descripcion="Vista de demostración: agenda clínica conectada al flujo de citas del Parcial 2."
+              descripcion="Vista de demostración: agenda clínica conectada al flujo de citas."
               enlaces={[{ to: '/veterinario', texto: 'Inicio' }]}
             />
           </RutaProtegida>
@@ -119,6 +126,7 @@ export default function App() {
       />
 
       <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+      </Routes>
+    </>
   )
 }

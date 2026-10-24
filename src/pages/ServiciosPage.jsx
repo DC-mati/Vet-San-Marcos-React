@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Container from 'react-bootstrap/Container'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import PlantillaPublica from '../components/templates/PlantillaPublica'
 import BuscadorServicios from '../components/molecules/BuscadorServicios'
@@ -11,9 +11,19 @@ import { useTituloPagina } from '../hooks/useTitulodePagina'
 export default function ServiciosPage() {
   useTituloPagina('Servicios')
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { servicios, categorias, buscar } = useServicios()
   const [termino, setTermino] = useState('')
-  const [categoria, setCategoria] = useState('')
+
+  const categoriaUrl = searchParams.get('categoria') || ''
+  const [categoriaManual, setCategoriaManual] = useState(null)
+
+  // Si cambia la URL (por ejemplo desde Categorías), vuelve a usar el filtro de la URL
+  useEffect(() => {
+    setCategoriaManual(null)
+  }, [categoriaUrl])
+
+  const categoria = categoriaManual ?? categoriaUrl
 
   const listado = useMemo(() => {
     const porTexto = buscar(termino)
@@ -41,7 +51,7 @@ export default function ServiciosPage() {
           categoria={categoria}
           categorias={categorias}
           onTerminoChange={setTermino}
-          onCategoriaChange={setCategoria}
+          onCategoriaChange={setCategoriaManual}
         />
 
         <ListaServicios servicios={listado} onSolicitar={irSolicitar} />

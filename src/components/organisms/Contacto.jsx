@@ -13,7 +13,11 @@ const datosIniciales = {
   mensaje: '',
 };
 
-export default function ContactSection() {
+/**
+ * @param {boolean} tituloPrincipal - true en /contacto (H1), false en Inicio (H2)
+ */
+export default function ContactSection({ tituloPrincipal = false }) {
+  const Titulo = tituloPrincipal ? 'h1' : 'h2'
   const [datos, setDatos] = useState(datosIniciales);
   const [estado, setEstado] = useState(null);
 
@@ -95,7 +99,7 @@ export default function ContactSection() {
           <div>
             <p className="home-eyebrow">Estamos para ayudarte</p>
 
-            <h2>Contacto</h2>
+            <Titulo>Contacto</Titulo>
 
             <p>
               Completa el formulario para dejar una consulta.

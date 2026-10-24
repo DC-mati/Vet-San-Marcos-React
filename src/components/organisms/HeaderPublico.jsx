@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
@@ -13,17 +14,24 @@ function enlaceNav({ isActive }) {
 }
 
 export default function PublicHeader() {
+  const [menuAbierto, setMenuAbierto] = useState(false)
+
+  const cerrarMenu = () => setMenuAbierto(false)
+
   return (
     <Navbar
       expand="xl"
       sticky="top"
       className="public-navbar py-2"
+      expanded={menuAbierto}
+      onToggle={setMenuAbierto}
     >
       <Container fluid="xxl" className="px-3 px-lg-4">
         <Navbar.Brand
           as={Link}
           to="/"
           className="public-brand d-flex align-items-center flex-shrink-0"
+          onClick={cerrarMenu}
         >
           <img src={logo} alt="" />
           <span className="public-brand__text">Veterinaria San Marcos</span>
@@ -36,27 +44,27 @@ export default function PublicHeader() {
 
         <Navbar.Collapse id="public-navbar-nav">
           <Nav className="ms-auto align-items-xl-center public-nav">
-            <NavLink to="/" className={enlaceNav} end>
+            <NavLink to="/" className={enlaceNav} end onClick={cerrarMenu}>
               Inicio
             </NavLink>
-            <NavLink to="/servicios" className={enlaceNav}>
+            <NavLink to="/servicios" className={enlaceNav} onClick={cerrarMenu}>
               Servicios
             </NavLink>
-            <NavLink to="/categorias" className={enlaceNav}>
+            <NavLink to="/categorias" className={enlaceNav} onClick={cerrarMenu}>
               Categorías
             </NavLink>
 
             <NavDropdown title="Más" id="nav-mas" className="public-nav__dropdown">
-              <NavDropdown.Item href="/#nosotros">
+              <NavDropdown.Item as={Link} to="/nosotros" onClick={cerrarMenu}>
                 Nosotros
               </NavDropdown.Item>
-              <NavDropdown.Item href="/#contacto">
+              <NavDropdown.Item as={Link} to="/contacto" onClick={cerrarMenu}>
                 Contacto
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/blog">
+              <NavDropdown.Item as={Link} to="/blog" onClick={cerrarMenu}>
                 Blog
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/mis-citas">
+              <NavDropdown.Item as={Link} to="/mis-citas" onClick={cerrarMenu}>
                 Mis citas
               </NavDropdown.Item>
             </NavDropdown>
@@ -67,6 +75,7 @@ export default function PublicHeader() {
               variant="primary"
               size="sm"
               className="public-nav__cta ms-xl-2 my-2 my-xl-0"
+              onClick={cerrarMenu}
             >
               Solicitar cita
             </Button>
@@ -76,6 +85,7 @@ export default function PublicHeader() {
               className={({ isActive }) =>
                 `${enlaceNav({ isActive })} public-nav__login ms-xl-1`
               }
+              onClick={cerrarMenu}
             >
               Iniciar sesión
             </NavLink>
