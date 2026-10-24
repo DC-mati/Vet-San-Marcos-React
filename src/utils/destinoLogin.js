@@ -11,6 +11,7 @@ export function resolverDestinoTrasLogin(desde, rol) {
 
   const esDueno = desde.startsWith('/dueno')
   const esAdmin = desde.startsWith('/admin')
+  const esRecepcionAdmin = desde.startsWith('/admin/recepcion')
   const esRecepcion = desde.startsWith('/recepcion')
   const esVeterinario = desde.startsWith('/veterinario')
   const esTecnico = desde.startsWith('/tecnico')
@@ -21,7 +22,10 @@ export function resolverDestinoTrasLogin(desde, rol) {
   if (esAdmin && rol !== 'admin') {
     return rutaPorRol(rol)
   }
-  if (esRecepcion && rol !== 'recepcion' && rol !== 'admin') {
+  if (esRecepcionAdmin && rol !== 'admin') {
+    return rutaPorRol(rol)
+  }
+  if (esRecepcion && rol !== 'recepcion') {
     return rutaPorRol(rol)
   }
   if (esVeterinario && rol !== 'veterinario') {

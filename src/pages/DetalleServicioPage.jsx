@@ -1,11 +1,10 @@
 import Container from 'react-bootstrap/Container'
-import Button from 'react-bootstrap/Button'
-import Alert from 'react-bootstrap/Alert'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import PlantillaPublica from '../components/templates/PlantillaPublica'
+import DetalleServicioContenido from '../components/organisms/DetalleServicioContenido'
+import { rutasCatalogoPublico } from '../constants/rutasCatalogo'
 import { useServicios } from '../context/ServiciosContext'
-import { formatoPrecio } from '../utils/formatoPrecio'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
 
 export default function DetalleServicioPage() {
@@ -16,53 +15,20 @@ export default function DetalleServicioPage() {
 
   useTituloPagina(servicio ? servicio.nombre : 'Servicio')
 
-  if (!servicio) {
-    return (
-      <PlantillaPublica>
-        <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
-          <Alert variant="warning">Servicio no encontrado.</Alert>
-          <Button as={Link} to="/servicios" variant="primary">
-            Volver al catálogo
-          </Button>
-        </Container>
-      </PlantillaPublica>
+  const solicitar = () => {
+    navigate(
+      `/solicitar-cita?codigo=${encodeURIComponent(servicio.codigo)}`,
     )
   }
 
   return (
     <PlantillaPublica>
       <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
-        <p className="text-muted mb-1">{servicio.codigo}</p>
-        <h1>{servicio.nombre}</h1>
-        <p className="lead">{servicio.categoria}</p>
-
-        <ul className="list-unstyled mb-4">
-          <li>
-            <strong>Especie:</strong> {servicio.especie}
-          </li>
-          <li>
-            <strong>Duración:</strong> {servicio.duracion || '—'}
-          </li>
-          <li>
-            <strong>Precio:</strong> {formatoPrecio(servicio.precio)}
-          </li>
-          {servicio.observaciones && (
-            <li>
-              <strong>Observaciones:</strong> {servicio.observaciones}
-            </li>
-          )}
-        </ul>
-
-        <Button
-          variant="primary"
-          className="me-2"
-          onClick={() => navigate(`/solicitar-cita?codigo=${servicio.codigo}`)}
-        >
-          Solicitar cita
-        </Button>
-        <Button as={Link} to="/servicios" variant="outline-secondary">
-          Volver
-        </Button>
+        <DetalleServicioContenido
+          servicio={servicio}
+          rutaCatalogo={rutasCatalogoPublico.lista}
+          onSolicitar={servicio ? solicitar : undefined}
+        />
       </Container>
     </PlantillaPublica>
   )

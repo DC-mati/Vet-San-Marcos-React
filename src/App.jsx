@@ -23,6 +23,8 @@ import AdminUsuariosPage from './pages/AdminUsuariosPage'
 import AdminInventarioPage from './pages/AdminInventarioPage'
 import AdminReportesPage from './pages/AdminReportesPage'
 import DuenoMascotasPage from './pages/DuenoMascotasPage'
+import DuenoCatalogoPage from './pages/DuenoCatalogoPage'
+import DuenoDetalleServicioPage from './pages/DuenoDetalleServicioPage'
 import RecepcionPage from './pages/RecepcionPage'
 import RecepcionPacientesPage from './pages/RecepcionPacientesPage'
 import AdminRecepcionPage from './pages/AdminRecepcionPage'
@@ -84,6 +86,22 @@ export default function App() {
         element={
           <RutaProtegida rolesPermitidos={['cliente']}>
             <DuenoMascotasPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/dueno/catalogo"
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <DuenoCatalogoPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/dueno/catalogo/:codigo"
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <DuenoDetalleServicioPage />
           </RutaProtegida>
         }
       />

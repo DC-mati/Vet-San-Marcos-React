@@ -6,5 +6,5 @@ export const enlacesPanelDueno = [
   { to: '/dueno/mis-mascotas', texto: 'Mis mascotas' },
   { to: rutasCitaDueno.formulario, texto: 'Solicitar cita' },
   { to: '/dueno/mis-citas', texto: 'Mis citas' },
-  { to: '/servicios', texto: 'Catálogo' },
+  { to: '/dueno/catalogo', texto: 'Catálogo' },
 ]

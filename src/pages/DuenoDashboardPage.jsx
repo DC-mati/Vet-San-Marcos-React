@@ -98,7 +98,7 @@ export default function DuenoDashboardPage() {
         <Button as={Link} to="/dueno/mis-citas" variant="outline-primary">
           Ver mis citas
         </Button>
-        <Button as={Link} to="/servicios" variant="outline-secondary">
+        <Button as={Link} to="/dueno/catalogo" variant="outline-secondary">
           Consultar catálogo
         </Button>
       </div>

@@ -1,6 +1,6 @@
 import Card from 'react-bootstrap/Card'
 import Button from 'react-bootstrap/Button'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import EtiquetaEspecie from '../atoms/EtiquetaEspecie'
 import { formatoPrecio } from '../../utils/formatoPrecio'
@@ -9,7 +9,18 @@ import { formatoPrecio } from '../../utils/formatoPrecio'
  * Tarjeta reutilizable del catálogo.
  * Recibe un servicio completo por props (no consulta el catálogo).
  */
-export default function TarjetaServicio({ servicio, onSolicitar }) {
+export default function TarjetaServicio({
+  servicio,
+  onSolicitar,
+  rutaDetalle,
+}) {
+  const location = useLocation()
+
+  const enlaceDetalle =
+    typeof rutaDetalle === 'function'
+      ? rutaDetalle(servicio.codigo, location.search)
+      : `${rutaDetalle || `/servicios/${servicio.codigo}`}${location.search}`
+
   return (
     <Card className="h-100 shadow-sm border-0 service-preview">
       <Card.Body className="d-flex flex-column">
@@ -38,7 +49,7 @@ export default function TarjetaServicio({ servicio, onSolicitar }) {
         <div className="d-flex flex-wrap gap-2 mt-2">
           <Button
             as={Link}
-            to={`/servicios/${servicio.codigo}`}
+            to={enlaceDetalle}
             variant="outline-primary"
             size="sm"
           >

@@ -4,7 +4,7 @@ import Alert from 'react-bootstrap/Alert'
 
 import TarjetaServicio from '../molecules/TarjetaServicio'
 
-export default function ListaServicios({ servicios, onSolicitar }) {
+export default function ListaServicios({ servicios, onSolicitar, rutaDetalle }) {
   if (!servicios.length) {
     return (
       <Alert variant="info">
@@ -17,7 +17,11 @@ export default function ListaServicios({ servicios, onSolicitar }) {
     <Row xs={1} md={2} lg={3} className="g-4">
       {servicios.map((servicio) => (
         <Col key={servicio.codigo}>
-          <TarjetaServicio servicio={servicio} onSolicitar={onSolicitar} />
+          <TarjetaServicio
+            servicio={servicio}
+            onSolicitar={onSolicitar}
+            rutaDetalle={rutaDetalle}
+          />
         </Col>
       ))}
     </Row>
