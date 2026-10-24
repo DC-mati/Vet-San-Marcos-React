@@ -34,12 +34,7 @@ export default function AdminUsuariosPage() {
     rol: 'cliente',
   })
 
-  const usuarios = useMemo(
-    () => listarUsuariosParaAdmin(),
-    [tick],
-  )
-
-  const recargar = () => setTick((n) => n + 1)
+  const recargar = () => setUsuarios(listarUsuariosParaAdmin())
 
   const guardarAlta = (evento) => {
     evento.preventDefault()
