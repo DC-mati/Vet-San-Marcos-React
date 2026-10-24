@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 
 import BuscadorServicios from '../molecules/BuscadorServicios'
@@ -14,18 +14,27 @@ export default function CatalogoContenido({
   rutaDetalle,
   mostrarEncabezado = true,
 }) {
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { servicios, categorias, buscar } = useServicios()
   const [termino, setTermino] = useState('')
 
-  const categoriaUrl = searchParams.get('categoria') || ''
-  const [categoriaManual, setCategoriaManual] = useState(null)
+  // La categoría vive en la URL para conservar filtros al ir al detalle y volver
+  const categoria = searchParams.get('categoria') || ''
 
-  useEffect(() => {
-    setCategoriaManual(null)
-  }, [categoriaUrl])
-
-  const categoria = categoriaManual ?? categoriaUrl
+  const cambiarCategoria = (valor) => {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (valor) {
+          next.set('categoria', valor)
+        } else {
+          next.delete('categoria')
+        }
+        return next
+      },
+      { replace: true },
+    )
+  }
 
   const listado = useMemo(() => {
     const porTexto = buscar(termino)
@@ -51,7 +60,7 @@ export default function CatalogoContenido({
         categoria={categoria}
         categorias={categorias}
         onTerminoChange={setTermino}
-        onCategoriaChange={setCategoriaManual}
+        onCategoriaChange={cambiarCategoria}
       />
 
       <ListaServicios

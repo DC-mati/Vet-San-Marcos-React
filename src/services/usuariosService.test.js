@@ -14,6 +14,7 @@ beforeEach(() => {
 })
 
 describe('usuariosService y auth', () => {
+  // Estas pruebas escriben vet_usuarios_overrides solo en el localStorage de jsdom
   it('desactiva cuenta demo desde administración', () => {
     actualizarUsuarioAdmin('camila@correo.cl', { activo: false })
 
