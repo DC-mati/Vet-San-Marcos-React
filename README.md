@@ -1,10 +1,33 @@
-# Veterinaria San Marcos — React (DSY1104 Parcial 2)
+# Veterinaria San Marcos
 
-Aplicación frontend simulada para la clínica veterinaria **San Marcos** (Rancagua). Catálogo oficial, solicitudes de citas, paneles por rol y CRUD con **localStorage**.
+Aplicación web para la gestión de servicios veterinarios, solicitudes de citas y administración de la clínica en Rancagua.
+
+Desarrollada con React, Vite y Bootstrap. Incluye interfaz responsive, componentes reutilizables (Atomic Design) y persistencia local en el navegador.
+
+Repositorio: [Vet-San-Marcos-React](https://github.com/DC-mati/Vet-San-Marcos-React)
+
+## Funcionalidades
+
+- Sitio público: inicio, catálogo de servicios, categorías, detalle, blog, contacto
+- Búsqueda y filtro por categoría en el catálogo
+- Solicitud de citas con validación, resumen y consulta de estado
+- Panel de recepción para confirmar citas o proponer otro horario
+- Panel de administración con CRUD de servicios y gestión de citas
+- Acceso por roles con cuentas de demostración
 
 ## Tecnologías
 
-React 19, Vite 8, JavaScript, Bootstrap 5, React Bootstrap, React Router 7, Context API, Vitest, Testing Library.
+- React 19 y Vite 8
+- JavaScript (JSX)
+- Bootstrap 5 y React Bootstrap
+- React Router DOM
+- Context API
+- Vitest y Testing Library
+
+## Requisitos
+
+- Node.js 18 o superior recomendado
+- npm
 
 ## Instalación
 
@@ -18,16 +41,22 @@ npm install
 npm run dev
 ```
 
-Abre la URL que muestra Vite (por defecto `http://localhost:5173`).
+Abre la URL que indica Vite (habitualmente `http://localhost:5173`).
 
-## Pruebas y cobertura
+En PowerShell, si `npm` falla por políticas de scripts, usa:
+
+```bash
+npm.cmd run dev
+```
+
+## Pruebas
 
 ```bash
 npm run test:run
 npm run test:cov
 ```
 
-Informe HTML en `coverage/index.html`.
+El informe de cobertura HTML se genera en `coverage/index.html` (carpeta ignorada por Git).
 
 ## Build y lint
 
@@ -36,29 +65,9 @@ npm run build
 npm run lint
 ```
 
-## Estructura (Atomic Design)
+## Cuentas de demostración
 
-```text
-src/
-  components/atoms|molecules|organisms|templates/
-  pages/
-  data/          # Datos iniciales (Excel)
-  services/      # CRUD sin React
-  context/       # Estado compartido
-  utils/         # Reglas pequeñas (precio, urgencia, validación)
-  test/
-```
-
-## Funcionalidades
-
-- Inicio, nosotros, contacto, blog, catálogo (31 servicios), categorías, detalle.
-- Búsqueda y filtro por categoría.
-- Flujo de cita: solicitar → resumen → éxito/error → mis citas.
-- Recepción: confirmar o proponer horario.
-- Admin: dashboard, CRUD servicios, gestión de citas.
-- Login simulado con cuentas demo (rol definido por la cuenta, no por selector libre).
-
-### Cuentas demo (contraseña: `demo123`)
+Contraseña común: `demo123`
 
 | Correo | Rol |
 |--------|-----|
@@ -66,29 +75,21 @@ src/
 | recepcion@sanmarcos.cl | Recepción |
 | veterinario@sanmarcos.cl | Veterinario |
 | tecnico@sanmarcos.cl | Técnico |
-| camila@correo.cl | Dueño de mascota |
+| camila@correo.cl | Cliente |
 
-## Git
+## Estructura del proyecto
 
-Repositorio: [Vet-San-Marcos-React](https://github.com/DC-mati/Vet-San-Marcos-React)  
-Rama de trabajo: **RamaHana** (desde `RamaMatias`).
+```text
+src/
+  components/   # Átomos, moléculas, organismos, plantillas
+  pages/        # Pantallas por ruta
+  data/         # Datos iniciales del catálogo
+  services/     # Operaciones CRUD (sin JSX)
+  context/      # Estado compartido
+  utils/        # Validaciones, formato de precios, reglas de negocio
+  test/         # Configuración de pruebas
+```
 
-## Limitaciones
+## Notas
 
-No hay backend ni base de datos real. Los datos persisten solo en el navegador (localStorage / sessionStorage). La autenticación es demostrativa.
-
-## Documentación para la evaluación
-
-Ver carpeta `docs/`:
-
-- `GUIA_ESTUDIANTE.md`
-- `GUIA_DEFENSA.md`
-- `RECORRIDO_PRUEBAS.md`
-- `ARQUITECTURA.md`
-- `REQUISITOS_Y_EVIDENCIAS.md`
-- `COBERTURA_TESTING.md`
-- `PRESENTACION.md`
-
-## Integrantes
-
-Consulta el historial de GitHub del repositorio compartido del equipo.
+Los datos de trabajo se guardan en `localStorage` del navegador. No hay servidor backend en este repositorio. La autenticación por correo y contraseña demo sirve para probar roles en la interfaz.

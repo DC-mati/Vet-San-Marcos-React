@@ -7,9 +7,9 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+node_modules/
+dist/
+dist-ssr/
 *.local
 
 # Editor directories and files
@@ -25,3 +25,13 @@ dist-ssr
 
 # Reportes generados por Vitest
 coverage/
+
+# Documentación personal y material académico (no publicar)
+docs/
+material-referencia/
+
+# Material académico suelto
+*.pdf
+*.docx
+*.xlsx
+*.pptx
