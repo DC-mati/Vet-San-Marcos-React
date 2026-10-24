@@ -210,6 +210,7 @@ Registro basado en el historial de Git del repositorio. Los enlaces apuntan a co
 | 2026-10-24 | Hanael Echeverría | Suite reducida a 10 pruebas con formato AAA | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/fdfdc22) |
 | 2026-10-24 | Hanael Echeverría | README profesional, identificación Grupo 9 y favicon inicial | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/9c1f06c) |
 | 2026-10-24 | Hanael Echeverría | Ajuste del favicon con el logo completo del sitio | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/2cec397) |
+| 2026-10-24 | Hanael Echeverría | Ajustes finales: favicon con símbolo, recepción, validación de citas y requisito Node | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/376c75d) |
 
 ---
 
