@@ -9,7 +9,7 @@ import {
   validarDatosNuevaCita,
 } from './citasService'
 import { crearMascota } from './mascotasService'
-import { CLAVES } from '../utils/storage'
+import { CLAVES, leerLista } from '../utils/storage'
 
 beforeEach(() => {
   localStorage.clear()
@@ -79,6 +79,17 @@ describe('citasService', () => {
       nombreDueno: 'Nuevo',
       registrarMascotaEnFlujo: true,
     })
+    const rechazoFlujo = crearCita({
+      fecha: '',
+      hora: '12:00',
+      nombreMascota: 'NoDebeGuardarse',
+      especie: 'Gato',
+      codigoServicio: 'SV001',
+      correo: 'fallo@test.cl',
+      nombreDueno: 'Fallo',
+      registrarMascotaEnFlujo: true,
+    })
+    const mascotasPersistidas = leerLista(CLAVES.mascotas, [])
 
     // Assert: reglas críticas del servicio de citas
     expect(sinMascota.ok).toBe(false)
@@ -91,5 +102,9 @@ describe('citasService', () => {
     expect(migrada[0].correoDueno).toBe('legacy@correo.cl')
     expect(registroFlujo.ok).toBe(true)
     expect(registroFlujo.cita.mascotaId).toMatch(/^m-/)
+    expect(rechazoFlujo.ok).toBe(false)
+    expect(
+      mascotasPersistidas.some((m) => m.nombre === 'NoDebeGuardarse'),
+    ).toBe(false)
   })
 })

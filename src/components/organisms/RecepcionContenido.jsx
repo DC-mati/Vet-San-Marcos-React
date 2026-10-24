@@ -28,7 +28,8 @@ const FILTROS = [
 export default function RecepcionContenido() {
   const { citas, cambiarEstado, proponerHorario } = useCitas()
   const [filtro, setFiltro] = useState('todas')
-  const [fechaAgenda, setFechaAgenda] = useState(fechaIsoHoy())
+  // Sin fecha inicial: se listan todas las solicitudes; el filtro por día es opcional.
+  const [fechaAgenda, setFechaAgenda] = useState('')
   const [mensaje, setMensaje] = useState('')
 
   const resumen = useMemo(
@@ -112,12 +113,27 @@ export default function RecepcionContenido() {
       </Row>
 
       <Form.Group className="mb-3" style={{ maxWidth: 320 }}>
-        <Form.Label>Filtrar por fecha de agenda</Form.Label>
-        <Form.Control
-          type="date"
-          value={fechaAgenda}
-          onChange={(e) => setFechaAgenda(e.target.value)}
-        />
+        <Form.Label>Filtrar por fecha de agenda (opcional)</Form.Label>
+        <div className="d-flex flex-wrap gap-2 align-items-center">
+          <Form.Control
+            type="date"
+            value={fechaAgenda}
+            onChange={(e) => setFechaAgenda(e.target.value)}
+          />
+          {fechaAgenda ? (
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm"
+              onClick={() => setFechaAgenda('')}
+            >
+              Ver todas las fechas
+            </button>
+          ) : null}
+        </div>
+        <Form.Text muted>
+          Por defecto se muestran citas de cualquier día. Las métricas de arriba
+          siguen usando la fecha de hoy.
+        </Form.Text>
       </Form.Group>
 
       <Form.Group className="mb-3" style={{ maxWidth: 320 }}>

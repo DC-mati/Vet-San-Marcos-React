@@ -143,36 +143,27 @@ export function obtenerCitasPorCorreo(correo) {
  * Exige mascota activa del dueño en citas nuevas.
  */
 export function crearCita(datos) {
-  let payload = { ...datos }
+  const payload = { ...datos }
+
+  const validacion = validarDatosNuevaCita(payload)
+  if (!validacion.ok) {
+    return validacion
+  }
 
   if (!payload.mascotaId && payload.registrarMascotaEnFlujo) {
-    const correoRegistro = (
-      payload.correo
-      || payload.tutorCorreo
-      || ''
-    ).trim().toLowerCase()
-
     const registro = crearMascota({
       nombre: payload.nombreMascota,
       especie: payload.especie,
-      tutorCorreo: correoRegistro,
+      tutorCorreo: validacion.correo,
     })
 
     if (!registro.ok) {
       return registro
     }
 
-    payload = {
-      ...payload,
-      mascotaId: registro.mascota.id,
-      nombreMascota: registro.mascota.nombre,
-      especie: registro.mascota.especie,
-    }
-  }
-
-  const validacion = validarDatosNuevaCita(payload)
-  if (!validacion.ok) {
-    return validacion
+    payload.mascotaId = registro.mascota.id
+    payload.nombreMascota = registro.mascota.nombre
+    payload.especie = registro.mascota.especie
   }
 
   const mascota = obtenerMascotaPorId(validacion.mascotaId || payload.mascotaId)

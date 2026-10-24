@@ -125,7 +125,7 @@ public/          # Favicon e íconos estáticos
 
 ## Instalación
 
-Requisitos: **Node.js 18+** recomendado y **npm**.
+Requisitos: **Node.js 20.19+** o **22.12+** (compatible con Vite 8, según la [documentación oficial de Vite](https://vite.dev/guide/#)) y **npm**.
 
 ```bash
 git clone -b RamaHana https://github.com/DC-mati/Vet-San-Marcos-React.git
@@ -208,6 +208,8 @@ Registro basado en el historial de Git del repositorio. Los enlaces apuntan a co
 | 2026-10-24 | Hanael Echeverría | Catálogo del dueño dentro del panel privado | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/72853f5) |
 | 2026-10-24 | Hanael Echeverría | Estabilización de pruebas y localStorage en Vitest | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/5d96f92) |
 | 2026-10-24 | Hanael Echeverría | Suite reducida a 10 pruebas con formato AAA | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/fdfdc22) |
+| 2026-10-24 | Hanael Echeverría | README profesional, identificación Grupo 9 y favicon inicial | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/9c1f06c) |
+| 2026-10-24 | Hanael Echeverría | Ajuste del favicon con el logo completo del sitio | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/2cec397) |
 
 ---
 
