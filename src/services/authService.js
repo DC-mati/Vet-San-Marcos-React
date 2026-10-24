@@ -147,7 +147,7 @@ export function rutaPorRol(rol) {
     recepcion: '/recepcion',
     veterinario: '/veterinario',
     tecnico: '/tecnico',
-    cliente: '/cliente',
+    cliente: '/dueno',
   }
 
   return mapa[rol] || '/'

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Form, Button, Alert } from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../../context/AuthContext'
 import { CLAVE_DEMO } from '../../data/usuariosDemo'
@@ -15,6 +15,7 @@ export default function FormularioLogin() {
   const [mensaje, setMensaje] = useState('')
 
   const navigate = useNavigate()
+  const location = useLocation()
   const { login, rutaPorRol } = useAuth()
 
   const handleSubmit = (evento) => {
@@ -28,7 +29,9 @@ export default function FormularioLogin() {
       return
     }
 
-    navigate(rutaPorRol(resultado.usuario.rol))
+    const destino =
+      location.state?.desde || rutaPorRol(resultado.usuario.rol)
+    navigate(destino)
   }
 
   return (

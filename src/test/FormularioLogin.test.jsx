@@ -125,7 +125,7 @@ describe('FormularioLogin', () => {
     ['recepcion@sanmarcos.cl', '/recepcion'],
     ['veterinario@sanmarcos.cl', '/veterinario'],
     ['tecnico@sanmarcos.cl', '/tecnico'],
-    ['camila@correo.cl', '/cliente'],
+    ['camila@correo.cl', '/dueno'],
   ])('redirige %s a %s', (correo, rutaEsperada) => {
     renderFormulario()
     completarFormulario({ correo })

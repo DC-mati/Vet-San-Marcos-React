@@ -46,7 +46,7 @@ export default function RegistroPage() {
     login(datos.correo, datos.clave)
     setTipo('success')
     setMensaje('Cuenta creada. Redirigiendo...')
-    setTimeout(() => navigate('/cliente'), 800)
+    setTimeout(() => navigate('/dueno'), 800)
   }
 
   return (

@@ -32,7 +32,7 @@ export default function ResultadoCitaPage({ tipo = 'exito' }) {
         )}
 
         <div className="d-flex gap-2 justify-content-center flex-wrap">
-          <Button as={Link} to="/mis-citas" variant="primary">
+          <Button as={Link} to="/dueno/mis-citas" variant="primary">
             Ver mis citas
           </Button>
           <Button as={Link} to="/" variant="outline-secondary">

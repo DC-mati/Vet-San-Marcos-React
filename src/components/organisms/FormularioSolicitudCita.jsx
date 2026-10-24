@@ -18,6 +18,7 @@ import { formatoPrecio } from '../../utils/formatoPrecio'
 export default function FormularioSolicitudCita({
   codigoInicial = '',
   valoresIniciales = {},
+  bloquearDatosCuenta = false,
   onContinuar,
 }) {
   const { servicios } = useServicios()
@@ -174,6 +175,7 @@ export default function FormularioSolicitudCita({
           value={datos.nombreDueno}
           onChange={(e) => actualizarCampo('nombreDueno', e.target.value)}
           isInvalid={Boolean(errores.nombreDueno)}
+          readOnly={bloquearDatosCuenta}
         />
         <Form.Control.Feedback type="invalid">
           {errores.nombreDueno}
@@ -187,6 +189,7 @@ export default function FormularioSolicitudCita({
           value={datos.correo}
           onChange={(e) => actualizarCampo('correo', e.target.value)}
           isInvalid={Boolean(errores.correo)}
+          readOnly={bloquearDatosCuenta}
         />
         <Form.Control.Feedback type="invalid">
           {errores.correo}

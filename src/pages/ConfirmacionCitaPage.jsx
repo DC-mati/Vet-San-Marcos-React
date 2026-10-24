@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import Container from 'react-bootstrap/Container'
 import Button from 'react-bootstrap/Button'
 import ListGroup from 'react-bootstrap/ListGroup'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 
 import PlantillaPublica from '../components/templates/PlantillaPublica'
+import { useAuth } from '../context/AuthContext'
 import { useCitas } from '../context/CitasContext'
 import { formatoPrecio } from '../utils/formatoPrecio'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
@@ -12,24 +14,50 @@ export default function ConfirmacionCitaPage() {
   useTituloPagina('Confirmar solicitud')
   const location = useLocation()
   const navigate = useNavigate()
+  const { usuario } = useAuth()
   const { solicitar } = useCitas()
+  const [enviando, setEnviando] = useState(false)
 
   const solicitud = location.state?.solicitud
+
+  if (!usuario || usuario.rol !== 'cliente') {
+    return (
+      <Navigate
+        to="/login"
+        state={{ desde: '/solicitar-cita/confirmacion' }}
+        replace
+      />
+    )
+  }
 
   if (!solicitud) {
     return <Navigate to="/solicitar-cita" replace />
   }
 
   const confirmar = () => {
-    const resultado = solicitar(solicitud)
+    if (enviando) {
+      return
+    }
+
+    setEnviando(true)
+
+    const payload = {
+      ...solicitud,
+      correo: usuario.correo,
+      nombreDueno: usuario.nombre || solicitud.nombreDueno,
+    }
+
+    const resultado = solicitar(payload)
 
     if (resultado.ok) {
       navigate('/solicitar-cita/exito', {
         state: { cita: resultado.cita },
       })
-    } else {
-      navigate('/solicitar-cita/error')
+      return
     }
+
+    setEnviando(false)
+    navigate('/solicitar-cita/error')
   }
 
   return (
@@ -59,8 +87,13 @@ export default function ConfirmacionCitaPage() {
           </ListGroup.Item>
         </ListGroup>
 
-        <Button variant="primary" className="me-2" onClick={confirmar}>
-          Confirmar solicitud
+        <Button
+          variant="primary"
+          className="me-2"
+          onClick={confirmar}
+          disabled={enviando}
+        >
+          {enviando ? 'Enviando...' : 'Confirmar solicitud'}
         </Button>
         <Button as={Link} to="/solicitar-cita" variant="outline-secondary">
           Editar datos

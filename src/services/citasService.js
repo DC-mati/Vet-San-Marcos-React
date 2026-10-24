@@ -1,13 +1,40 @@
 import { citasIniciales } from '../data/catalogoInicial'
 import { CLAVES, guardarLista, leerLista } from '../utils/storage'
 
+/**
+ * Añade correoDueno si un registro antiguo solo tenía el campo correo.
+ * No borra citas, solo completa datos faltantes.
+ */
+function migrarCompatibilidadCitas(lista) {
+  let cambio = false
+
+  const normalizada = lista.map((cita) => {
+    if (cita.correoDueno) {
+      return cita
+    }
+
+    if (cita.correo) {
+      cambio = true
+      return { ...cita, correoDueno: cita.correo }
+    }
+
+    return cita
+  })
+
+  if (cambio) {
+    guardarLista(CLAVES.citas, normalizada)
+  }
+
+  return normalizada
+}
+
 function asegurarCitas() {
   const actuales = leerLista(CLAVES.citas, null)
   if (!actuales) {
     guardarLista(CLAVES.citas, citasIniciales)
     return [...citasIniciales]
   }
-  return actuales
+  return migrarCompatibilidadCitas(actuales)
 }
 
 function generarId() {

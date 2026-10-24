@@ -30,6 +30,24 @@ describe('citasService', () => {
     expect(resultado.cita.estado).toBe('Pendiente')
   })
 
+  it('migra correo antiguo a correoDueno', () => {
+    localStorage.setItem(
+      CLAVES.citas,
+      JSON.stringify([
+        {
+          id: 'legacy',
+          fecha: '2026-11-01',
+          hora: '10:00',
+          correo: 'legacy@correo.cl',
+          estado: 'Pendiente',
+        },
+      ]),
+    )
+
+    const lista = obtenerTodasCitas()
+    expect(lista[0].correoDueno).toBe('legacy@correo.cl')
+  })
+
   it('cambia el estado de una cita', () => {
     const { cita } = crearCita({
       fecha: '2026-12-02',

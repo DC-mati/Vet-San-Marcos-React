@@ -11,13 +11,14 @@ import SolicitarCitaPage from './pages/SolicitarCitaPage'
 import ConfirmacionCitaPage from './pages/ConfirmacionCitaPage'
 import ResultadoCitaPage from './pages/ResultadoCitaPage'
 import MisCitasPage from './pages/MisCitasPage'
+import DuenoDashboardPage from './pages/DuenoDashboardPage'
+import RedireccionMisCitas from './pages/RedireccionMisCitas'
 import BlogPage from './pages/BlogPage'
 import BlogDetallePage from './pages/BlogDetallePage'
 import AdminPage from './pages/AdminPage'
 import AdminServiciosPage from './pages/AdminServiciosPage'
 import AdminCitasPage from './pages/AdminCitasPage'
 import RecepcionPage from './pages/RecepcionPage'
-import ClientePage from './pages/ClientePage'
 import PanelSimplePage from './pages/PanelSimplePage'
 import NosotrosPage from './pages/NosotrosPage'
 import ContactoPage from './pages/ContactoPage'
@@ -51,7 +52,26 @@ export default function App() {
         path="/solicitar-cita/error"
         element={<ResultadoCitaPage tipo="error" />}
       />
-      <Route path="/mis-citas" element={<MisCitasPage />} />
+      <Route path="/mis-citas" element={<RedireccionMisCitas />} />
+
+      <Route
+        path="/dueno"
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <DuenoDashboardPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/dueno/mis-citas"
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <MisCitasPage />
+          </RutaProtegida>
+        }
+      />
+
+      <Route path="/cliente" element={<Navigate to="/dueno" replace />} />
 
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/blog/:id" element={<BlogDetallePage />} />
@@ -86,15 +106,6 @@ export default function App() {
         element={
           <RutaProtegida rolesPermitidos={['recepcion', 'admin']}>
             <RecepcionPage />
-          </RutaProtegida>
-        }
-      />
-
-      <Route
-        path="/cliente"
-        element={
-          <RutaProtegida rolesPermitidos={['cliente']}>
-            <ClientePage />
           </RutaProtegida>
         }
       />

@@ -1,55 +1,38 @@
-import { useMemo, useState } from 'react'
-import Container from 'react-bootstrap/Container'
-import Form from 'react-bootstrap/Form'
+import { useMemo } from 'react'
 import Alert from 'react-bootstrap/Alert'
 
-import PlantillaPublica from '../components/templates/PlantillaPublica'
+import PlantillaAdmin from '../components/templates/PlantillaAdmin'
 import TablaCitas from '../components/organisms/TablaCitas'
+import { enlacesPanelDueno } from '../constants/enlacesDueno'
+import { useAuth } from '../context/AuthContext'
 import { useCitas } from '../context/CitasContext'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
+import { filtrarCitasPorCorreo } from '../utils/citasDueno'
 
 export default function MisCitasPage() {
   useTituloPagina('Mis citas')
+  const { usuario } = useAuth()
   const { citas } = useCitas()
-  const [correo, setCorreo] = useState('')
 
-  const misCitas = useMemo(() => {
-    const texto = correo.trim().toLowerCase()
-    if (!texto) {
-      return []
-    }
-    return citas.filter(
-      (c) => (c.correoDueno || '').toLowerCase() === texto,
-    )
-  }, [citas, correo])
+  const misCitas = useMemo(
+    () => filtrarCitasPorCorreo(citas, usuario?.correo),
+    [citas, usuario?.correo],
+  )
 
   return (
-    <PlantillaPublica>
-      <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
-        <h1 className="mb-3">Mis citas</h1>
-        <p className="text-secondary">
-          Ingresa el mismo correo que usaste al solicitar la cita para ver el
-          estado actualizado (simulación sin backend).
-        </p>
+    <PlantillaAdmin titulo="Mis citas" enlaces={enlacesPanelDueno}>
+      <p className="text-secondary">
+        Aquí ves el estado de tus solicitudes. Si recepción confirma o propone
+        otro horario, los cambios se reflejan al recargar la página.
+      </p>
 
-        <Form.Group className="mb-4" style={{ maxWidth: 420 }}>
-          <Form.Label>Correo</Form.Label>
-          <Form.Control
-            type="email"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            placeholder="camila@correo.cl"
-          />
-        </Form.Group>
+      {misCitas.length === 0 && (
+        <Alert variant="info">
+          Todavía no tienes solicitudes registradas con tu cuenta.
+        </Alert>
+      )}
 
-        {correo && misCitas.length === 0 && (
-          <Alert variant="info">
-            No hay solicitudes para ese correo todavía.
-          </Alert>
-        )}
-
-        <TablaCitas citas={misCitas} modo="lectura" />
-      </Container>
-    </PlantillaPublica>
+      <TablaCitas citas={misCitas} modo="lectura" />
+    </PlantillaAdmin>
   )
 }

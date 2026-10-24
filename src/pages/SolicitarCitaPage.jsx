@@ -1,5 +1,5 @@
 import Container from 'react-bootstrap/Container'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import PlantillaPublica from '../components/templates/PlantillaPublica'
 import FormularioSolicitudCita from '../components/organisms/FormularioSolicitudCita'
@@ -10,9 +10,21 @@ export default function SolicitarCitaPage() {
   useTituloPagina('Solicitar cita')
   const [params] = useSearchParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { usuario } = useAuth()
 
   const codigo = params.get('codigo') || ''
+
+  if (!usuario) {
+    const destino = `${location.pathname}${location.search}`
+    return (
+      <Navigate to="/login" state={{ desde: destino }} replace />
+    )
+  }
+
+  if (usuario.rol !== 'cliente') {
+    return <Navigate to="/" replace />
+  }
 
   const continuar = (datos) => {
     navigate('/solicitar-cita/confirmacion', { state: { solicitud: datos } })
@@ -26,9 +38,10 @@ export default function SolicitarCitaPage() {
         <FormularioSolicitudCita
           codigoInicial={codigo}
           valoresIniciales={{
-            correo: usuario?.correo || '',
-            nombreDueno: usuario?.nombre || '',
+            correo: usuario.correo,
+            nombreDueno: usuario.nombre || '',
           }}
+          bloquearDatosCuenta
           onContinuar={continuar}
         />
         </div>

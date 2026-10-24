@@ -4,9 +4,10 @@ import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 import NavDropdown from 'react-bootstrap/NavDropdown'
 import Button from 'react-bootstrap/Button'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 
 import logo from '../../assets/logo-san-marcos.png'
+import { useAuth } from '../../context/AuthContext'
 
 /** Enlace con estado activo para rutas internas */
 function enlaceNav({ isActive }) {
@@ -15,8 +16,19 @@ function enlaceNav({ isActive }) {
 
 export default function PublicHeader() {
   const [menuAbierto, setMenuAbierto] = useState(false)
+  const { usuario, logout, rutaPorRol } = useAuth()
+  const navigate = useNavigate()
 
   const cerrarMenu = () => setMenuAbierto(false)
+
+  const cerrarSesion = () => {
+    logout()
+    cerrarMenu()
+    navigate('/')
+  }
+
+  const panelDelUsuario =
+    usuario?.rol === 'cliente' ? '/dueno' : rutaPorRol(usuario?.rol)
 
   return (
     <Navbar
@@ -64,9 +76,6 @@ export default function PublicHeader() {
               <NavDropdown.Item as={Link} to="/blog" onClick={cerrarMenu}>
                 Blog
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/mis-citas" onClick={cerrarMenu}>
-                Mis citas
-              </NavDropdown.Item>
             </NavDropdown>
 
             <Button
@@ -80,15 +89,37 @@ export default function PublicHeader() {
               Solicitar cita
             </Button>
 
-            <NavLink
-              to="/login"
-              className={({ isActive }) =>
-                `${enlaceNav({ isActive })} public-nav__login ms-xl-1`
-              }
-              onClick={cerrarMenu}
-            >
-              Iniciar sesión
-            </NavLink>
+            {!usuario && (
+              <NavLink
+                to="/login"
+                className={({ isActive }) =>
+                  `${enlaceNav({ isActive })} public-nav__login ms-xl-1`
+                }
+                onClick={cerrarMenu}
+              >
+                Iniciar sesión
+              </NavLink>
+            )}
+
+            {usuario && (
+              <>
+                <NavLink
+                  to={panelDelUsuario}
+                  className={enlaceNav}
+                  onClick={cerrarMenu}
+                >
+                  Mi panel
+                </NavLink>
+                <Button
+                  variant="outline-secondary"
+                  size="sm"
+                  className="ms-xl-2 my-2 my-xl-0"
+                  onClick={cerrarSesion}
+                >
+                  Cerrar sesión
+                </Button>
+              </>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>
