@@ -7,7 +7,7 @@ import RegistroPage from './pages/RegistroPage'
 import ServiciosPage from './pages/ServiciosPage'
 import CategoriasPage from './pages/CategoriasPage'
 import DetalleServicioPage from './pages/DetalleServicioPage'
-import RedireccionSolicitarCita from './pages/RedireccionSolicitarCita'
+import SolicitarCitaPublicPage from './pages/SolicitarCitaPublicPage'
 import MisCitasPage from './pages/MisCitasPage'
 import DuenoDashboardPage from './pages/DuenoDashboardPage'
 import DuenoSolicitarCitaPage from './pages/DuenoSolicitarCitaPage'
@@ -50,7 +50,7 @@ export default function App() {
       <Route path="/categorias" element={<CategoriasPage />} />
       <Route path="/servicios/:codigo" element={<DetalleServicioPage />} />
 
-      <Route path="/solicitar-cita" element={<RedireccionSolicitarCita />} />
+      <Route path="/solicitar-cita" element={<SolicitarCitaPublicPage />} />
       <Route
         path="/solicitar-cita/confirmacion"
         element={<Navigate to={rutasCitaDueno.confirmacion} replace />}

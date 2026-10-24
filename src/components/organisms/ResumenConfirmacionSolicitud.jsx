@@ -9,6 +9,7 @@ export default function ResumenConfirmacionSolicitud({
   enviando,
   onConfirmar,
   rutaEditar,
+  ocultarEditar = false,
 }) {
   return (
     <>
@@ -39,9 +40,11 @@ export default function ResumenConfirmacionSolicitud({
         <Button variant="primary" onClick={onConfirmar} disabled={enviando}>
           {enviando ? 'Enviando...' : 'Confirmar solicitud'}
         </Button>
-        <Button as={Link} to={rutaEditar} variant="outline-secondary">
-          Editar solicitud
-        </Button>
+        {!ocultarEditar && (
+          <Button as={Link} to={rutaEditar} variant="outline-secondary">
+            Editar solicitud
+          </Button>
+        )}
       </div>
     </>
   )

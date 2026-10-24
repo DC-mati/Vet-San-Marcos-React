@@ -41,19 +41,28 @@ export default function FormularioLogin() {
     <Form onSubmit={handleSubmit} id="login-form">
       {mensaje && <Alert variant="danger">{mensaje}</Alert>}
 
-      <Alert variant="secondary" className="small mb-0">
-        Acceso de prueba: admin@sanmarcos.cl / {CLAVE_DEMO}
-      </Alert>
-
       <Form.Group className="mb-3" controlId="email">
         <Form.Label>Correo electrónico</Form.Label>
         <Form.Control
           type="email"
-          placeholder="admin@sanmarcos.cl"
+          placeholder="tu@correo.cl"
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
+          autoComplete="username"
         />
       </Form.Group>
+
+      <details className="mb-3 small text-secondary">
+        <summary className="user-select-none">Cuentas de demostración (evaluación)</summary>
+        <p className="mb-1 mt-2">
+          Contraseña común: <strong>{CLAVE_DEMO}</strong>
+        </p>
+        <ul className="mb-0 ps-3">
+          <li>admin@sanmarcos.cl — Administrador</li>
+          <li>recepcion@sanmarcos.cl — Recepción</li>
+          <li>camila@correo.cl — Dueño</li>
+        </ul>
+      </details>
 
       <Form.Group className="mb-3" controlId="password">
         <Form.Label>Contraseña</Form.Label>

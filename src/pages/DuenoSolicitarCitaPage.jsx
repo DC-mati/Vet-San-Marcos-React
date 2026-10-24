@@ -28,8 +28,8 @@ export default function DuenoSolicitarCitaPage() {
     return <Navigate to="/login" state={{ desde: rutasCitaDueno.formulario }} replace />
   }
 
-  const continuar = (datos) => {
-    navigate(rutasCitaDueno.confirmacion, { state: { solicitud: datos } })
+  const alRegistrar = (cita) => {
+    navigate(rutasCitaDueno.exito, { state: { cita } })
   }
 
   return (
@@ -47,14 +47,14 @@ export default function DuenoSolicitarCitaPage() {
           </p>
         )}
         <FormularioSolicitudCita
+          variant="panel"
           codigoInicial={codigo}
           valoresIniciales={{
             correo: usuario.correo,
             nombreDueno: usuario.nombre || '',
           }}
-          bloquearDatosCuenta
           mascotasRegistradas={mascotas}
-          onContinuar={continuar}
+          onExito={alRegistrar}
         />
       </div>
     </PlantillaAdmin>

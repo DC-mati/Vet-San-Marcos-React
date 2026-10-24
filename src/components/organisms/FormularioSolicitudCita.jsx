@@ -1,46 +1,84 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-import { crearMascota } from '../../services/mascotasService'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Alert from 'react-bootstrap/Alert'
 
 import { useServicios } from '../../context/ServiciosContext'
+import { useCitas } from '../../context/CitasContext'
+import { useAuth } from '../../context/AuthContext'
+import { useMascotas } from '../../context/MascotasContext'
+import { correoYaRegistrado } from '../../services/authService'
 import {
   calcularPrecioUrgencia,
   esServicioUrgencia,
 } from '../../utils/calcularPrecioUrgencia'
-import { validarSolicitudCita } from '../../utils/validaciones'
+import {
+  validarEtapaCita,
+  validarSolicitudCita,
+  validarEmail,
+} from '../../utils/validaciones'
 import { formatoPrecio } from '../../utils/formatoPrecio'
+import ResumenConfirmacionSolicitud from './ResumenConfirmacionSolicitud'
 
 /**
- * Formulario principal para solicitar una cita veterinaria.
- * Valida campos y entrega los datos listos al componente padre.
+ * Solicitud de cita en dos etapas: datos de la cita y confirmación con cuenta.
+ * variant="publico" no exige login previo; variant="panel" usa la sesión del dueño.
  */
 export default function FormularioSolicitudCita({
   codigoInicial = '',
+  variant = 'panel',
   valoresIniciales = {},
-  bloquearDatosCuenta = false,
-  mascotasRegistradas = [],
-  onContinuar,
+  mascotasRegistradas: mascotasProp = [],
+  onExito,
 }) {
   const { servicios } = useServicios()
+  const { solicitar } = useCitas()
+  const { usuario, login, registroYLogin } = useAuth()
+  const { mascotas: mascotasCtx, recargar } = useMascotas()
+
+  const esPanel = variant === 'panel'
+  const dueñoAutenticado = esPanel && usuario?.rol === 'cliente'
+
+  const [paso, setPaso] = useState(1)
   const [datos, setDatos] = useState({
     nombreMascota: '',
     especie: 'Perro',
     codigoServicio: codigoInicial,
     fecha: '',
     hora: '',
-    nombreDueno: '',
-    correo: '',
+    nombreDueno: valoresIniciales.nombreDueno || '',
+    correo: valoresIniciales.correo || '',
     telefono: '',
     observaciones: '',
     fueraHorario: false,
     mascotaId: '',
     ...valoresIniciales,
   })
+  const [clave, setClave] = useState('')
+  const [confirmarClave, setConfirmarClave] = useState('')
+  const [claveLogin, setClaveLogin] = useState('')
   const [errores, setErrores] = useState({})
+  const [mensaje, setMensaje] = useState('')
   const [enviando, setEnviando] = useState(false)
+  const [cuentaExistente, setCuentaExistente] = useState(false)
+
+  const correoSesion = datos.correo.trim().toLowerCase()
+  const dueñoEnSesion =
+    dueñoAutenticado
+    || (usuario?.rol === 'cliente' && usuario.correo === correoSesion)
+
+  useEffect(() => {
+    if (dueñoEnSesion && usuario?.correo) {
+      recargar(usuario.correo)
+    }
+  }, [dueñoEnSesion, usuario?.correo, recargar])
+
+  const mascotasRegistradas = dueñoEnSesion
+    ? mascotasProp.length
+      ? mascotasProp
+      : mascotasCtx
+    : []
 
   const servicioSeleccionado = useMemo(
     () => servicios.find((s) => s.codigo === datos.codigoServicio),
@@ -58,9 +96,19 @@ export default function FormularioSolicitudCita({
     return calcularPrecioUrgencia(servicioSeleccionado.precio, fuera)
   }, [servicioSeleccionado, datos.fueraHorario])
 
+  const solicitudResumen = useMemo(
+    () => ({
+      ...datos,
+      nombreServicio: servicioSeleccionado?.nombre || '',
+      precioEstimado,
+    }),
+    [datos, servicioSeleccionado, precioEstimado],
+  )
+
   const actualizarCampo = (campo, valor) => {
     setDatos((prev) => ({ ...prev, [campo]: valor }))
     setErrores((prev) => ({ ...prev, [campo]: '' }))
+    setMensaje('')
   }
 
   const elegirMascota = (id) => {
@@ -83,50 +131,100 @@ export default function FormularioSolicitudCita({
     setErrores((prev) => ({ ...prev, nombreMascota: '', especie: '' }))
   }
 
-  const enviar = (evento) => {
+  const continuarEtapaUno = (evento) => {
     evento.preventDefault()
+    setMensaje('')
 
+    const nuevosErrores = validarEtapaCita(datos)
+    if (Object.keys(nuevosErrores).length > 0) {
+      setErrores(nuevosErrores)
+      return
+    }
+
+    if (dueñoAutenticado && !datos.mascotaId && !(datos.nombreMascota || '').trim()) {
+      setErrores({
+        nombreMascota: 'Selecciona una mascota o escribe un nombre para registrarla.',
+      })
+      return
+    }
+
+    setPaso(2)
+
+    if (!dueñoAutenticado && validarEmail(datos.correo)) {
+      setCuentaExistente(correoYaRegistrado(datos.correo))
+    } else if (!dueñoAutenticado) {
+      setCuentaExistente(false)
+    }
+  }
+
+  const volverEtapaUno = () => {
+    setPaso(1)
+    setMensaje('')
+    setErrores({})
+  }
+
+  const iniciarSesionEnFlujo = (evento) => {
+    evento.preventDefault()
+    setMensaje('')
+    setErrores({})
+
+    const resultado = login(datos.correo, claveLogin)
+    if (!resultado.ok) {
+      setErrores({ claveLogin: resultado.error })
+      return
+    }
+
+    if (resultado.usuario.rol !== 'cliente') {
+      setMensaje('Esta cuenta no puede solicitar citas como dueño.')
+      return
+    }
+
+    setDatos((prev) => ({
+      ...prev,
+      nombreDueno: resultado.usuario.nombre || prev.nombreDueno,
+      correo: resultado.usuario.correo,
+    }))
+    recargar(resultado.usuario.correo)
+    setCuentaExistente(true)
+    setClaveLogin('')
+  }
+
+  const confirmarSolicitud = () => {
     if (enviando) {
       return
     }
 
     setEnviando(true)
+    setMensaje('')
+    setErrores({})
 
-    let mascotaId = datos.mascotaId
-    let registrarMascotaEnFlujo = false
+    const nuevosErrores = validarSolicitudCita(datos)
 
-    if (bloquearDatosCuenta && !mascotaId) {
-      if (!(datos.nombreMascota || '').trim()) {
-        setErrores({
-          nombreMascota: 'Selecciona una mascota o escribe un nombre para registrarla.',
-        })
-        setEnviando(false)
-        return
+    if (!dueñoAutenticado) {
+      if (!validarEmail(datos.correo)) {
+        nuevosErrores.correo = 'Escribe un correo válido.'
       }
-      registrarMascotaEnFlujo = true
-    }
 
-    if (!bloquearDatosCuenta && !mascotaId) {
-      const registro = crearMascota({
-        nombre: datos.nombreMascota,
-        especie: datos.especie,
-        tutorCorreo: datos.correo,
-      })
-      if (!registro.ok) {
-        setErrores({ nombreMascota: registro.error })
-        setEnviando(false)
-        return
+      const existe = correoYaRegistrado(datos.correo)
+      setCuentaExistente(existe)
+
+      if (existe) {
+        if (!usuario || usuario.correo !== datos.correo.trim().toLowerCase()) {
+          nuevosErrores.general =
+            'Inicia sesión con este correo para confirmar la solicitud.'
+          setErrores(nuevosErrores)
+          setEnviando(false)
+          return
+        }
+      } else {
+        if (clave.length < 6) {
+          nuevosErrores.clave = 'La contraseña debe tener al menos 6 caracteres.'
+        }
+        if (clave !== confirmarClave) {
+          nuevosErrores.confirmarClave = 'Las contraseñas no coinciden.'
+        }
       }
-      mascotaId = registro.mascota.id
     }
-
-    const datosEnvio = {
-      ...datos,
-      mascotaId,
-      registrarMascotaEnFlujo,
-    }
-
-    const nuevosErrores = validarSolicitudCita(datosEnvio)
 
     if (Object.keys(nuevosErrores).length > 0) {
       setErrores(nuevosErrores)
@@ -134,186 +232,358 @@ export default function FormularioSolicitudCita({
       return
     }
 
-    onContinuar({
-      ...datosEnvio,
+    if (!dueñoAutenticado && !correoYaRegistrado(datos.correo)) {
+      const registro = registroYLogin({
+        nombre: datos.nombreDueno,
+        correo: datos.correo,
+        clave,
+      })
+
+      if (!registro.ok) {
+        setMensaje(registro.error)
+        setEnviando(false)
+        return
+      }
+    }
+
+    const correoFinal = (
+      dueñoAutenticado || usuario?.rol === 'cliente'
+        ? usuario.correo
+        : datos.correo
+    )
+      .trim()
+      .toLowerCase()
+
+    const payload = {
+      ...datos,
+      correo: correoFinal,
+      tutorCorreo: correoFinal,
+      nombreDueno:
+        dueñoAutenticado || usuario?.nombre || datos.nombreDueno,
       nombreServicio: servicioSeleccionado?.nombre || '',
       precioEstimado,
-    })
+      registrarMascotaEnFlujo: !datos.mascotaId,
+    }
+
+    const resultado = solicitar(payload)
+
+    if (resultado.ok) {
+      onExito?.(resultado.cita)
+      setEnviando(false)
+      return
+    }
+
+    setMensaje(resultado.error || 'No se pudo enviar la solicitud.')
     setEnviando(false)
   }
 
-  return (
-    <Form onSubmit={enviar} noValidate>
-      <Alert variant="secondary" className="small">
-        Tu solicitud será revisada por recepción. Podrás consultar su estado
-        desde Mis citas.
-      </Alert>
+  const progreso = (
+    <div
+      className="flujo-cita-progreso mb-4"
+      aria-label="Progreso de la solicitud"
+    >
+      <span className={paso === 1 ? 'activo' : 'completo'}>
+        1. Datos de la cita
+      </span>
+      <span className="flujo-cita-progreso__separador" aria-hidden="true" />
+      <span className={paso === 2 ? 'activo' : ''}>2. Confirmación</span>
+    </div>
+  )
 
-      {mascotasRegistradas.length > 0 && (
-        <Form.Group className="mb-3" controlId="mascotaRegistrada">
-          <Form.Label>Mascota registrada</Form.Label>
+  if (paso === 1) {
+    return (
+      <Form onSubmit={continuarEtapaUno} noValidate>
+        {progreso}
+
+        <Alert variant="secondary" className="small">
+          Completa los datos de la atención. En el siguiente paso confirmarás
+          la solicitud {dueñoAutenticado ? 'con tu cuenta' : 'y tu identificación'}.
+        </Alert>
+
+        {mascotasRegistradas.length > 0 && (
+          <Form.Group className="mb-3" controlId="mascotaRegistrada">
+            <Form.Label>Mascota registrada</Form.Label>
+            <Form.Select
+              value={datos.mascotaId}
+              onChange={(e) => elegirMascota(e.target.value)}
+            >
+              <option value="">Selecciona una mascota...</option>
+              {mascotasRegistradas.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.nombre} ({m.especie})
+                </option>
+              ))}
+            </Form.Select>
+            <Form.Text muted>
+              También puedes escribir una mascota nueva más abajo.
+            </Form.Text>
+          </Form.Group>
+        )}
+
+        <Form.Group className="mb-3" controlId="nombreMascota">
+          <Form.Label>Nombre de la mascota</Form.Label>
+          <Form.Control
+            value={datos.nombreMascota}
+            onChange={(e) => actualizarCampo('nombreMascota', e.target.value)}
+            isInvalid={Boolean(errores.nombreMascota)}
+            readOnly={Boolean(datos.mascotaId)}
+          />
+          <Form.Control.Feedback type="invalid">
+            {errores.nombreMascota}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Especie</Form.Label>
           <Form.Select
-            value={datos.mascotaId}
-            onChange={(e) => elegirMascota(e.target.value)}
+            value={datos.especie}
+            onChange={(e) => actualizarCampo('especie', e.target.value)}
+            isInvalid={Boolean(errores.especie)}
+            disabled={Boolean(datos.mascotaId)}
           >
-            <option value="">Selecciona una mascota...</option>
-            {mascotasRegistradas.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.nombre} ({m.especie})
+            <option value="Perro">Perro</option>
+            <option value="Gato">Gato</option>
+            <option value="Ave">Ave</option>
+            <option value="Conejo">Conejo</option>
+            <option value="Otra">Otra</option>
+          </Form.Select>
+          <Form.Control.Feedback type="invalid">
+            {errores.especie}
+          </Form.Control.Feedback>
+        </Form.Group>
+
+        <Form.Group className="mb-3">
+          <Form.Label>Servicio</Form.Label>
+          <Form.Select
+            value={datos.codigoServicio}
+            onChange={(e) => actualizarCampo('codigoServicio', e.target.value)}
+            isInvalid={Boolean(errores.codigoServicio)}
+          >
+            <option value="">Selecciona...</option>
+            {servicios.map((s) => (
+              <option key={s.codigo} value={s.codigo}>
+                {s.nombre} ({formatoPrecio(s.precio)})
               </option>
             ))}
           </Form.Select>
-          <Form.Text className="text-muted">
-            Si no aparece en la lista, escribe el nombre abajo y se registrará al
-            continuar.
-          </Form.Text>
+          <Form.Control.Feedback type="invalid">
+            {errores.codigoServicio}
+          </Form.Control.Feedback>
         </Form.Group>
-      )}
 
-      <Form.Group className="mb-3" controlId="nombreMascota">
-        <Form.Label>Nombre de la mascota</Form.Label>
-        <Form.Control
-          value={datos.nombreMascota}
-          onChange={(e) => actualizarCampo('nombreMascota', e.target.value)}
-          isInvalid={Boolean(errores.nombreMascota)}
-          readOnly={Boolean(datos.mascotaId)}
-        />
-        <Form.Control.Feedback type="invalid">
-          {errores.nombreMascota}
-        </Form.Control.Feedback>
-      </Form.Group>
+        {servicioSeleccionado && esServicioUrgencia(servicioSeleccionado) && (
+          <Form.Group className="mb-3">
+            <Form.Check
+              type="checkbox"
+              label="Solicitud fuera de horario (+$10.000 CLP, una sola vez)"
+              checked={datos.fueraHorario}
+              onChange={(e) => actualizarCampo('fueraHorario', e.target.checked)}
+            />
+          </Form.Group>
+        )}
 
-      <Form.Group className="mb-3">
-        <Form.Label>Especie</Form.Label>
-        <Form.Select
-          value={datos.especie}
-          onChange={(e) => actualizarCampo('especie', e.target.value)}
-          isInvalid={Boolean(errores.especie)}
-          disabled={Boolean(datos.mascotaId)}
-        >
-          <option value="Perro">Perro</option>
-          <option value="Gato">Gato</option>
-          <option value="Ave">Ave</option>
-          <option value="Conejo">Conejo</option>
-          <option value="Otra">Otra</option>
-        </Form.Select>
-        <Form.Control.Feedback type="invalid">
-          {errores.especie}
-        </Form.Control.Feedback>
-      </Form.Group>
+        <div className="row">
+          <Form.Group className="mb-3 col-md-6">
+            <Form.Label>Fecha</Form.Label>
+            <Form.Control
+              type="date"
+              value={datos.fecha}
+              onChange={(e) => actualizarCampo('fecha', e.target.value)}
+              isInvalid={Boolean(errores.fecha)}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errores.fecha}
+            </Form.Control.Feedback>
+          </Form.Group>
 
-      <Form.Group className="mb-3">
-        <Form.Label>Servicio</Form.Label>
-        <Form.Select
-          value={datos.codigoServicio}
-          onChange={(e) => actualizarCampo('codigoServicio', e.target.value)}
-          isInvalid={Boolean(errores.codigoServicio)}
-        >
-          <option value="">Selecciona...</option>
-          {servicios.map((s) => (
-            <option key={s.codigo} value={s.codigo}>
-              {s.nombre} ({formatoPrecio(s.precio)})
-            </option>
-          ))}
-        </Form.Select>
-        <Form.Control.Feedback type="invalid">
-          {errores.codigoServicio}
-        </Form.Control.Feedback>
-      </Form.Group>
+          <Form.Group className="mb-3 col-md-6">
+            <Form.Label>Hora</Form.Label>
+            <Form.Control
+              type="time"
+              value={datos.hora}
+              onChange={(e) => actualizarCampo('hora', e.target.value)}
+              isInvalid={Boolean(errores.hora)}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errores.hora}
+            </Form.Control.Feedback>
+          </Form.Group>
+        </div>
 
-      {servicioSeleccionado && esServicioUrgencia(servicioSeleccionado) && (
         <Form.Group className="mb-3">
-          <Form.Check
-            type="checkbox"
-            label="Solicitud fuera de horario (+$10.000 CLP, una sola vez)"
-            checked={datos.fueraHorario}
-            onChange={(e) => actualizarCampo('fueraHorario', e.target.checked)}
+          <Form.Label>Observaciones (opcional)</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={2}
+            value={datos.observaciones}
+            onChange={(e) => actualizarCampo('observaciones', e.target.value)}
           />
         </Form.Group>
+
+        {precioEstimado > 0 && (
+          <p className="fw-semibold">
+            Precio estimado: {formatoPrecio(precioEstimado)}
+          </p>
+        )}
+
+        <Button type="submit" variant="primary">
+          Continuar
+        </Button>
+      </Form>
+    )
+  }
+
+  const sesionLista =
+    dueñoAutenticado
+    || (usuario?.rol === 'cliente'
+      && usuario.correo === datos.correo.trim().toLowerCase())
+
+  return (
+    <div>
+      {progreso}
+
+      {mensaje && (
+        <Alert variant="danger" dismissible onClose={() => setMensaje('')}>
+          {mensaje}
+        </Alert>
       )}
 
-      <div className="row">
-        <Form.Group className="mb-3 col-md-6">
-          <Form.Label>Fecha</Form.Label>
-          <Form.Control
-            type="date"
-            value={datos.fecha}
-            onChange={(e) => actualizarCampo('fecha', e.target.value)}
-            isInvalid={Boolean(errores.fecha)}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errores.fecha}
-          </Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group className="mb-3 col-md-6">
-          <Form.Label>Hora</Form.Label>
-          <Form.Control
-            type="time"
-            value={datos.hora}
-            onChange={(e) => actualizarCampo('hora', e.target.value)}
-            isInvalid={Boolean(errores.hora)}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errores.hora}
-          </Form.Control.Feedback>
-        </Form.Group>
-      </div>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Tu nombre</Form.Label>
-        <Form.Control
-          value={datos.nombreDueno}
-          onChange={(e) => actualizarCampo('nombreDueno', e.target.value)}
-          isInvalid={Boolean(errores.nombreDueno)}
-          readOnly={bloquearDatosCuenta}
-        />
-        <Form.Control.Feedback type="invalid">
-          {errores.nombreDueno}
-        </Form.Control.Feedback>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Correo</Form.Label>
-        <Form.Control
-          type="email"
-          value={datos.correo}
-          onChange={(e) => actualizarCampo('correo', e.target.value)}
-          isInvalid={Boolean(errores.correo)}
-          readOnly={bloquearDatosCuenta}
-        />
-        <Form.Control.Feedback type="invalid">
-          {errores.correo}
-        </Form.Control.Feedback>
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Teléfono (opcional)</Form.Label>
-        <Form.Control
-          value={datos.telefono}
-          onChange={(e) => actualizarCampo('telefono', e.target.value)}
-        />
-      </Form.Group>
-
-      <Form.Group className="mb-3">
-        <Form.Label>Observaciones</Form.Label>
-        <Form.Control
-          as="textarea"
-          rows={2}
-          value={datos.observaciones}
-          onChange={(e) => actualizarCampo('observaciones', e.target.value)}
-        />
-      </Form.Group>
-
-      {precioEstimado > 0 && (
-        <p className="fw-semibold">
-          Precio estimado: {formatoPrecio(precioEstimado)}
-        </p>
+      {errores.general && (
+        <Alert variant="warning">{errores.general}</Alert>
       )}
 
-      <Button type="submit" variant="primary" disabled={enviando}>
-        {enviando ? 'Procesando...' : 'Revisar solicitud'}
+      {!dueñoAutenticado && (
+        <>
+          <h2 className="h5 mb-3">Datos del dueño</h2>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Tu nombre</Form.Label>
+            <Form.Control
+              value={datos.nombreDueno}
+              onChange={(e) => actualizarCampo('nombreDueno', e.target.value)}
+              isInvalid={Boolean(errores.nombreDueno)}
+              readOnly={sesionLista}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errores.nombreDueno}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Correo</Form.Label>
+            <Form.Control
+              type="email"
+              value={datos.correo}
+              onChange={(e) => {
+                actualizarCampo('correo', e.target.value)
+                setCuentaExistente(false)
+              }}
+              onBlur={() => {
+                if (validarEmail(datos.correo)) {
+                  setCuentaExistente(correoYaRegistrado(datos.correo))
+                }
+              }}
+              isInvalid={Boolean(errores.correo)}
+              readOnly={sesionLista}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errores.correo}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Teléfono (opcional)</Form.Label>
+            <Form.Control
+              value={datos.telefono}
+              onChange={(e) => actualizarCampo('telefono', e.target.value)}
+            />
+          </Form.Group>
+
+          {cuentaExistente && !sesionLista && (
+            <div className="border rounded p-3 mb-3 bg-light">
+              <p className="mb-2 small mb-0">
+                Este correo ya tiene cuenta. Inicia sesión para confirmar sin
+                volver a registrarte.
+              </p>
+              <Form onSubmit={iniciarSesionEnFlujo} className="mt-3">
+                <Form.Group className="mb-2">
+                  <Form.Label>Contraseña</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={claveLogin}
+                    onChange={(e) => setClaveLogin(e.target.value)}
+                    isInvalid={Boolean(errores.claveLogin)}
+                    autoComplete="current-password"
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    {errores.claveLogin}
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Button type="submit" variant="outline-primary" size="sm">
+                  Iniciar sesión y continuar
+                </Button>
+              </Form>
+            </div>
+          )}
+
+          {!cuentaExistente && !sesionLista && (
+            <>
+              <Form.Group className="mb-3">
+                <Form.Label>Crea una contraseña</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={clave}
+                  onChange={(e) => setClave(e.target.value)}
+                  isInvalid={Boolean(errores.clave)}
+                  autoComplete="new-password"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errores.clave}
+                </Form.Control.Feedback>
+              </Form.Group>
+
+              <Form.Group className="mb-3">
+                <Form.Label>Confirma la contraseña</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={confirmarClave}
+                  onChange={(e) => setConfirmarClave(e.target.value)}
+                  isInvalid={Boolean(errores.confirmarClave)}
+                  autoComplete="new-password"
+                />
+                <Form.Control.Feedback type="invalid">
+                  {errores.confirmarClave}
+                </Form.Control.Feedback>
+              </Form.Group>
+            </>
+          )}
+
+          {sesionLista && (
+            <Alert variant="success" className="small">
+              Sesión iniciada como {usuario.nombre}. Revisa el resumen y confirma.
+            </Alert>
+          )}
+        </>
+      )}
+
+      <h2 className="h5 mb-3">Resumen de la solicitud</h2>
+
+      <ResumenConfirmacionSolicitud
+        solicitud={solicitudResumen}
+        enviando={enviando}
+        onConfirmar={confirmarSolicitud}
+        rutaEditar="#"
+        ocultarEditar
+      />
+
+      <Button
+        variant="outline-secondary"
+        className="mt-3"
+        onClick={volverEtapaUno}
+        disabled={enviando}
+      >
+        Atrás
       </Button>
-    </Form>
+    </div>
   )
 }

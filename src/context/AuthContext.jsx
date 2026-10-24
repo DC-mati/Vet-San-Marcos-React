@@ -31,6 +31,22 @@ export function AuthProvider({ children }) {
     return registrarUsuario(datos)
   }, [])
 
+  /** Crea cuenta de dueño e inicia sesión en un solo paso (flujo público de citas). */
+  const registroYLogin = useCallback((datos) => {
+    const registroResultado = registrarUsuario(datos)
+    if (!registroResultado.ok) {
+      return registroResultado
+    }
+
+    const loginResultado = iniciarSesion(datos.correo, datos.clave)
+    if (!loginResultado.ok) {
+      return loginResultado
+    }
+
+    setUsuario(loginResultado.usuario)
+    return loginResultado
+  }, [])
+
   const logout = useCallback(() => {
     cerrarSesionService()
     setUsuario(null)
@@ -42,10 +58,11 @@ export function AuthProvider({ children }) {
       estaAutenticado: Boolean(usuario),
       login,
       registro,
+      registroYLogin,
       logout,
       rutaPorRol,
     }),
-    [usuario, login, registro, logout],
+    [usuario, login, registro, registroYLogin, logout],
   )
 
   return (

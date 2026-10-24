@@ -9,12 +9,21 @@ export function resolverDestinoTrasLogin(desde, rol) {
     return rutaPorRol(rol)
   }
 
+  const esSolicitudPublica = desde.startsWith('/solicitar-cita')
   const esDueno = desde.startsWith('/dueno')
   const esAdmin = desde.startsWith('/admin')
   const esRecepcionAdmin = desde.startsWith('/admin/recepcion')
   const esRecepcion = desde.startsWith('/recepcion')
   const esVeterinario = desde.startsWith('/veterinario')
   const esTecnico = desde.startsWith('/tecnico')
+
+  if (esSolicitudPublica && rol === 'cliente') {
+    return desde
+  }
+
+  if (esSolicitudPublica && rol !== 'cliente') {
+    return rutaPorRol(rol)
+  }
 
   if (esDueno && rol !== 'cliente') {
     return rutaPorRol(rol)

@@ -34,6 +34,16 @@ afterEach(() => {
 
 describe('App', () => {
   it('integra catálogo público paneles por rol y rutas protegidas', () => {
+    // Arrange y Act: solicitud pública sin login previo
+    const solicitudPublica = renderApp('/solicitar-cita')
+    expect(
+      solicitudPublica.getByRole('heading', { name: /solicitar cita/i }),
+    ).toBeInTheDocument()
+    expect(
+      solicitudPublica.getByText(/1\. datos de la cita/i),
+    ).toBeInTheDocument()
+    solicitudPublica.unmount()
+
     // Arrange y Act: catálogo público sin sesión
     const publico = renderApp('/servicios')
 

@@ -33,6 +33,34 @@ export function validarFechaCita(fechaIso) {
 /**
  * Valida campos mínimos de una solicitud de cita.
  */
+/** Validación de la primera etapa: solo datos de la cita y la mascota. */
+export function validarEtapaCita(datos) {
+  const errores = {}
+
+  if (!(datos.nombreMascota || '').trim()) {
+    errores.nombreMascota = 'Indica el nombre de la mascota.'
+  }
+
+  if (!(datos.especie || '').trim()) {
+    errores.especie = 'Selecciona la especie.'
+  }
+
+  if (!(datos.codigoServicio || '').trim()) {
+    errores.codigoServicio = 'Selecciona un servicio.'
+  }
+
+  const errorFecha = validarFechaCita(datos.fecha)
+  if (errorFecha) {
+    errores.fecha = errorFecha
+  }
+
+  if (!(datos.hora || '').trim()) {
+    errores.hora = 'Selecciona una hora.'
+  }
+
+  return errores
+}
+
 export function validarSolicitudCita(datos) {
   const errores = {}
 

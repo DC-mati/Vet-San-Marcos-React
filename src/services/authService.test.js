@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { CLAVE_DEMO } from '../data/usuariosDemo'
 import {
   cerrarSesion,
+  correoYaRegistrado,
   iniciarSesion,
   leerSesion,
   registrarUsuario,
@@ -37,6 +38,8 @@ describe('authService', () => {
     const loginNuevo = iniciarSesion(nuevoCorreo, CLAVE_DEMO)
 
     // Assert: sesión rutas y reglas de acceso
+    expect(correoYaRegistrado(correoDueno)).toBe(true)
+    expect(correoYaRegistrado('nuevo@test.cl')).toBe(false)
     expect(admin.ok).toBe(true)
     expect(admin.usuario.rol).toBe('admin')
     expect(dueno.ok).toBe(true)

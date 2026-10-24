@@ -70,6 +70,21 @@ export function iniciarSesion(correo, clave) {
   return { ok: true, usuario: sesion }
 }
 
+/** Indica si el correo pertenece a una cuenta demo o registrada localmente. */
+export function correoYaRegistrado(correo) {
+  const email = (correo || '').trim().toLowerCase()
+  if (!email) {
+    return false
+  }
+
+  return (
+    cuentasDemo.some((u) => u.correo.toLowerCase() === email)
+    || leerLista('vet_usuarios_registrados', []).some(
+      (u) => u.correo.toLowerCase() === email,
+    )
+  )
+}
+
 /** Registro simulado: solo dueños de mascota. */
 export function registrarUsuario(datos) {
   const nombre = (datos.nombre || '').trim()

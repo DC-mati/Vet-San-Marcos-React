@@ -1,83 +1,10 @@
-import { useState } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
-import PlantillaAdmin from '../components/templates/PlantillaAdmin'
-import ResumenConfirmacionSolicitud from '../components/organisms/ResumenConfirmacionSolicitud'
-import { enlacesPanelDueno } from '../constants/enlacesDueno'
 import { rutasCitaDueno } from '../constants/rutasDuenoCita'
-import { useAuth } from '../context/AuthContext'
-import { useCitas } from '../context/CitasContext'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
 
+/** Ruta legada: la confirmación está integrada en el formulario de dos etapas. */
 export default function DuenoConfirmacionCitaPage() {
   useTituloPagina('Confirmar solicitud')
-  const location = useLocation()
-  const navigate = useNavigate()
-  const { usuario } = useAuth()
-  const { solicitar } = useCitas()
-  const [enviando, setEnviando] = useState(false)
-  const [errorEnvio, setErrorEnvio] = useState('')
-
-  const solicitud = location.state?.solicitud
-
-  if (!usuario || usuario.rol !== 'cliente') {
-    return (
-      <Navigate
-        to="/login"
-        state={{ desde: rutasCitaDueno.confirmacion }}
-        replace
-      />
-    )
-  }
-
-  if (!solicitud) {
-    return <Navigate to={rutasCitaDueno.formulario} replace />
-  }
-
-  const confirmar = () => {
-    if (enviando) {
-      return
-    }
-
-    setEnviando(true)
-    setErrorEnvio('')
-
-    const payload = {
-      ...solicitud,
-      correo: usuario.correo,
-      nombreDueno: usuario.nombre || solicitud.nombreDueno,
-    }
-
-    const resultado = solicitar(payload)
-
-    if (resultado.ok) {
-      navigate(rutasCitaDueno.exito, {
-        state: { cita: resultado.cita },
-      })
-      return
-    }
-
-    setEnviando(false)
-    setErrorEnvio(resultado.error || 'No se pudo enviar la solicitud.')
-  }
-
-  return (
-    <PlantillaAdmin
-      titulo="Resumen de la solicitud"
-      enlaces={enlacesPanelDueno}
-    >
-      {errorEnvio && (
-        <p className="text-danger" role="alert">
-          {errorEnvio}
-        </p>
-      )}
-
-      <ResumenConfirmacionSolicitud
-        solicitud={solicitud}
-        enviando={enviando}
-        onConfirmar={confirmar}
-        rutaEditar={rutasCitaDueno.formulario}
-      />
-    </PlantillaAdmin>
-  )
+  return <Navigate to={rutasCitaDueno.formulario} replace />
 }

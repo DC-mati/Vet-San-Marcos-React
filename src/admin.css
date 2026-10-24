@@ -57,6 +57,36 @@
   max-width: 720px;
 }
 
+.flujo-cita-progreso {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+}
+
+.flujo-cita-progreso span {
+  color: var(--vsm-muted, #6b7280);
+}
+
+.flujo-cita-progreso span.activo {
+  color: var(--vsm-ink, #1f2937);
+  font-weight: 700;
+}
+
+.flujo-cita-progreso span.completo {
+  color: var(--vsm-blue-700, #1d4ed8);
+  font-weight: 600;
+}
+
+.flujo-cita-progreso__separador {
+  flex: 1;
+  min-width: 2rem;
+  height: 2px;
+  background: rgb(75 85 99 / 20%);
+  border-radius: 1px;
+}
+
 @media (max-width: 991.98px) {
   .admin-page .sidebar {
     min-height: auto;
