@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
@@ -63,6 +63,11 @@ export default function FormularioSolicitudCita({
   const [mensaje, setMensaje] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [cuentaExistente, setCuentaExistente] = useState(false)
+  const datosRef = useRef(datos)
+
+  useEffect(() => {
+    datosRef.current = datos
+  }, [datos])
 
   const correoSesion = datos.correo.trim().toLowerCase()
   const dueñoEnSesion =
@@ -107,7 +112,11 @@ export default function FormularioSolicitudCita({
   )
 
   const actualizarCampo = (campo, valor) => {
-    setDatos((prev) => ({ ...prev, [campo]: valor }))
+    setDatos((prev) => {
+      const next = { ...prev, [campo]: valor }
+      datosRef.current = next
+      return next
+    })
     setErrores((prev) => ({ ...prev, [campo]: '' }))
     setMensaje('')
   }
@@ -123,12 +132,16 @@ export default function FormularioSolicitudCita({
       return
     }
 
-    setDatos((prev) => ({
-      ...prev,
-      mascotaId: id,
-      nombreMascota: mascota.nombre,
-      especie: mascota.especie,
-    }))
+    setDatos((prev) => {
+      const next = {
+        ...prev,
+        mascotaId: id,
+        nombreMascota: mascota.nombre,
+        especie: mascota.especie,
+      }
+      datosRef.current = next
+      return next
+    })
     setErrores((prev) => ({ ...prev, nombreMascota: '', especie: '' }))
   }
 
@@ -136,23 +149,30 @@ export default function FormularioSolicitudCita({
     evento.preventDefault()
     setMensaje('')
 
-    const nuevosErrores = validarEtapaCita(datos)
+    const actuales = datosRef.current
+    const nuevosErrores = validarEtapaCita(actuales)
     if (Object.keys(nuevosErrores).length > 0) {
       setErrores(nuevosErrores)
       return
     }
 
-    if (dueñoAutenticado && !datos.mascotaId && !(datos.nombreMascota || '').trim()) {
+    if (
+      dueñoAutenticado
+      && !actuales.mascotaId
+      && !(actuales.nombreMascota || '').trim()
+    ) {
       setErrores({
         nombreMascota: 'Selecciona una mascota o escribe un nombre para registrarla.',
       })
       return
     }
 
+    datosRef.current = actuales
+    setDatos(actuales)
     setPaso(2)
 
-    if (!dueñoAutenticado && validarEmail(datos.correo)) {
-      setCuentaExistente(correoYaRegistrado(datos.correo))
+    if (!dueñoAutenticado && validarEmail(actuales.correo)) {
+      setCuentaExistente(correoYaRegistrado(actuales.correo))
     } else if (!dueñoAutenticado) {
       setCuentaExistente(false)
     }
@@ -200,14 +220,26 @@ export default function FormularioSolicitudCita({
     setErrores({})
 
     try {
+      const actuales = datosRef.current
       const datosConfirmacion =
         dueñoAutenticado && usuario
           ? {
-              ...datos,
-              correo: datos.correo || usuario.correo,
-              nombreDueno: datos.nombreDueno || usuario.nombre || '',
+              ...actuales,
+              correo: actuales.correo || usuario.correo,
+              nombreDueno: actuales.nombreDueno || usuario.nombre || '',
             }
-          : datos
+          : actuales
+
+      const servicioConfirmacion = servicios.find(
+        (s) => s.codigo === datosConfirmacion.codigoServicio,
+      )
+      const precioConfirmacion = servicioConfirmacion
+        ? calcularPrecioUrgencia(
+            servicioConfirmacion.precio,
+            datosConfirmacion.fueraHorario
+              && esServicioUrgencia(servicioConfirmacion),
+          )
+        : precioEstimado
 
       const nuevosErrores = validarSolicitudCita(datosConfirmacion)
 
@@ -258,11 +290,12 @@ export default function FormularioSolicitudCita({
         ...datosConfirmacion,
         correo: correoFinal,
         tutorCorreo: correoFinal,
-        nombreDueno:
-          dueñoAutenticado || usuario?.nombre || datosConfirmacion.nombreDueno,
-        nombreServicio: servicioSeleccionado?.nombre || '',
-        precioEstimado,
-        registrarMascotaEnFlujo: !datos.mascotaId,
+        nombreDueno: dueñoAutenticado
+          ? (usuario?.nombre || datosConfirmacion.nombreDueno || '')
+          : (datosConfirmacion.nombreDueno || ''),
+        nombreServicio: servicioConfirmacion?.nombre || '',
+        precioEstimado: precioConfirmacion,
+        registrarMascotaEnFlujo: !datosConfirmacion.mascotaId,
       }
 
       const validacionCita = validarDatosNuevaCita(payload)
@@ -296,6 +329,12 @@ export default function FormularioSolicitudCita({
       }
 
       setMensaje(resultado.error || 'No se pudo enviar la solicitud.')
+    } catch (error) {
+      setMensaje(
+        error instanceof Error
+          ? error.message
+          : 'Error inesperado al confirmar la solicitud.',
+      )
     } finally {
       setEnviando(false)
     }
