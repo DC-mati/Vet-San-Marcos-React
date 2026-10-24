@@ -1,10 +1,12 @@
 import { cuentasDemo } from '../data/usuariosDemo'
+import { obtenerPerfilPorCorreo } from './usuariosService'
 import { CLAVES, leerLista, guardarLista } from '../utils/storage'
 import { validarEmail } from '../utils/validaciones'
 
 /**
- * Autenticación simulada: compara correo y clave con cuentas demo
- * o usuarios registrados en localStorage.
+ * Autenticación simulada con cuentas ficticias.
+ * Compara correo y clave con cuentas demo o registros locales.
+ * No es un sistema seguro para contraseñas reales.
  */
 export function iniciarSesion(correo, clave) {
   const email = (correo || '').trim().toLowerCase()
@@ -26,7 +28,7 @@ export function iniciarSesion(correo, clave) {
   }
 
   const registrados = leerLista('vet_usuarios_registrados', [])
-  const cuenta =
+  const cuentaCredencial =
     cuentasDemo.find(
       (u) => u.correo.toLowerCase() === email && u.clave === password,
     )
@@ -34,17 +36,26 @@ export function iniciarSesion(correo, clave) {
       (u) => u.correo.toLowerCase() === email && u.clave === password,
     )
 
-  if (!cuenta) {
+  if (!cuentaCredencial) {
     return {
       ok: false,
       error: 'Correo o contraseña incorrectos. Usa las cuentas demo.',
     }
   }
 
+  const perfil = obtenerPerfilPorCorreo(email)
+
+  if (!perfil || perfil.activo === false) {
+    return {
+      ok: false,
+      error: 'Esta cuenta está desactivada. Contacta a recepción.',
+    }
+  }
+
   const sesion = {
-    correo: cuenta.correo,
-    nombre: cuenta.nombre,
-    rol: cuenta.rol,
+    correo: perfil.correo,
+    nombre: perfil.nombre,
+    rol: perfil.rol,
   }
 
   if (typeof localStorage !== 'undefined') {
@@ -95,6 +106,7 @@ export function registrarUsuario(datos) {
     correo,
     clave,
     rol: 'cliente',
+    activo: true,
   }
 
   const lista = [...leerLista('vet_usuarios_registrados', []), nuevo]
@@ -127,14 +139,45 @@ export function leerSesion() {
   }
 
   if (sesion && sesion.correo) {
-    return sesion
+    const perfil = obtenerPerfilPorCorreo(sesion.correo)
+
+    if (perfil) {
+      if (perfil.activo === false) {
+        cerrarSesion()
+        return null
+      }
+
+      return {
+        correo: perfil.correo,
+        nombre: perfil.nombre,
+        rol: perfil.rol,
+      }
+    }
+
+    if (sesion.rol) {
+      return {
+        correo: sesion.correo,
+        nombre: sesion.nombre || sesion.correo,
+        rol: sesion.rol,
+      }
+    }
   }
 
   if (typeof sessionStorage !== 'undefined') {
     const correo = sessionStorage.getItem('vetEmail')
     const rol = sessionStorage.getItem('vetRole')
     if (correo && rol) {
-      return { correo, rol, nombre: correo }
+      const perfil = obtenerPerfilPorCorreo(correo)
+      if (!perfil || perfil.activo === false) {
+        cerrarSesion()
+        return null
+      }
+
+      return {
+        correo: perfil.correo,
+        nombre: perfil.nombre,
+        rol: perfil.rol,
+      }
     }
   }
 

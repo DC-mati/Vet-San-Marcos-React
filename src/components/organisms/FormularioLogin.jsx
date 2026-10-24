@@ -42,6 +42,7 @@ export default function FormularioLogin() {
       {mensaje && <Alert variant="danger">{mensaje}</Alert>}
 
       <Alert variant="secondary" className="small">
+        Autenticación simulada con cuentas ficticias. No uses contraseñas reales.
         Demo: admin@sanmarcos.cl / {CLAVE_DEMO}
       </Alert>
 

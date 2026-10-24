@@ -54,8 +54,8 @@ export default function AdminUsuariosPage() {
       enlaces={enlacesAdmin}
     >
       <Alert variant="info" className="small">
-        Las cuentas demo no se editan aquí. Puedes crear cuentas nuevas o
-        actualizar las registradas.
+        Simulación académica. Puedes activar o desactivar cuentas demo y las
+        creadas desde administración.
       </Alert>
 
       {mensaje && (
@@ -89,11 +89,9 @@ export default function AdminUsuariosPage() {
                 <td>{u.activo ? 'Activo' : 'Inactivo'}</td>
                 <td>{u.origen}</td>
                 <td>
-                  {u.editable && (
-                    <Button size="sm" onClick={() => setEditando(u)}>
-                      Editar
-                    </Button>
-                  )}
+                  <Button size="sm" onClick={() => setEditando(u)}>
+                    Editar
+                  </Button>
                 </td>
               </tr>
             ))}

@@ -1,6 +1,10 @@
 import { citasIniciales } from '../data/catalogoInicial'
 import { CLAVES, guardarLista, leerLista } from '../utils/storage'
 import { ESTADOS_CITA, tipoVisualPorEstado } from '../utils/estadosCita'
+import { validarFechaCita } from '../utils/validaciones'
+import { generarIdUnico } from '../utils/idUnico'
+import { crearMascota, obtenerMascotaPorId } from './mascotasService'
+import { obtenerServicioPorCodigo } from './serviciosService'
 
 /**
  * Añade correoDueno si un registro antiguo solo tenía el campo correo.
@@ -45,8 +49,75 @@ function asegurarCitas() {
   return migrarCompatibilidadCitas(actuales)
 }
 
-function generarId() {
-  return `c${Date.now()}`
+/** Evita dos solicitudes idénticas pendientes del mismo dueño. */
+function esSolicitudDuplicada(datos, lista) {
+  const correo = (datos.correo || datos.tutorCorreo || '').trim().toLowerCase()
+  const mascotaId = (datos.mascotaId || '').trim()
+  const codigo = (datos.codigoServicio || '').trim()
+
+  return lista.some(
+    (c) =>
+      c.estado === ESTADOS_CITA.pendiente
+      && (c.correoDueno || c.tutorCorreo || '').toLowerCase() === correo
+      && (c.mascotaId || '') === mascotaId
+      && c.fecha === datos.fecha
+      && c.hora === datos.hora
+      && (c.codigoServicio || '') === codigo,
+  )
+}
+
+/**
+ * Valida datos mínimos antes de crear una cita nueva.
+ * Devuelve { ok, error, correo, servicio, mascotaId }.
+ */
+export function validarDatosNuevaCita(datos) {
+  const correo = (datos.correo || datos.tutorCorreo || '').trim().toLowerCase()
+
+  if (!correo) {
+    return { ok: false, error: 'Indica el correo del dueño.' }
+  }
+
+  if (!(datos.nombreDueno || '').trim()) {
+    return { ok: false, error: 'Indica el nombre del dueño.' }
+  }
+
+  const errorFecha = validarFechaCita(datos.fecha)
+  if (errorFecha) {
+    return { ok: false, error: errorFecha }
+  }
+
+  if (!(datos.hora || '').trim()) {
+    return { ok: false, error: 'Indica la hora de la cita.' }
+  }
+
+  const codigo = (datos.codigoServicio || '').trim()
+  if (!codigo) {
+    return { ok: false, error: 'Selecciona un servicio válido.' }
+  }
+
+  const servicio = obtenerServicioPorCodigo(codigo)
+  if (!servicio) {
+    return { ok: false, error: 'El servicio no existe en el catálogo.' }
+  }
+
+  const mascotaId = (datos.mascotaId || '').trim()
+  if (!mascotaId && !datos.registrarMascotaEnFlujo) {
+    return {
+      ok: false,
+      error: 'Asocia la cita a una mascota registrada y activa.',
+    }
+  }
+
+  if (datos.registrarMascotaEnFlujo && !(datos.nombreMascota || '').trim()) {
+    return { ok: false, error: 'Indica el nombre de la mascota a registrar.' }
+  }
+
+  return {
+    ok: true,
+    correo,
+    servicio,
+    mascotaId,
+  }
 }
 
 /** Lista todas las citas. */
@@ -63,39 +134,98 @@ export function obtenerCitaPorId(id) {
 export function obtenerCitasPorCorreo(correo) {
   const texto = (correo || '').trim().toLowerCase()
   return obtenerTodasCitas().filter(
-    (c) => (c.correoDueno || '').toLowerCase() === texto,
+    (c) => (c.correoDueno || c.tutorCorreo || '').toLowerCase() === texto,
   )
 }
 
 /**
  * Crea una solicitud de cita en estado Pendiente.
+ * Exige mascota activa del dueño en citas nuevas.
  */
 export function crearCita(datos) {
+  let payload = { ...datos }
+
+  if (!payload.mascotaId && payload.registrarMascotaEnFlujo) {
+    const correoRegistro = (
+      payload.correo
+      || payload.tutorCorreo
+      || ''
+    ).trim().toLowerCase()
+
+    const registro = crearMascota({
+      nombre: payload.nombreMascota,
+      especie: payload.especie,
+      tutorCorreo: correoRegistro,
+    })
+
+    if (!registro.ok) {
+      return registro
+    }
+
+    payload = {
+      ...payload,
+      mascotaId: registro.mascota.id,
+      nombreMascota: registro.mascota.nombre,
+      especie: registro.mascota.especie,
+    }
+  }
+
+  const validacion = validarDatosNuevaCita(payload)
+  if (!validacion.ok) {
+    return validacion
+  }
+
+  const mascota = obtenerMascotaPorId(validacion.mascotaId || payload.mascotaId)
+  if (!mascota || mascota.activo === false) {
+    return {
+      ok: false,
+      error: 'La mascota no está activa o no existe.',
+    }
+  }
+
+  if ((mascota.tutorCorreo || '').toLowerCase() !== validacion.correo) {
+    return {
+      ok: false,
+      error: 'La mascota no pertenece a esta cuenta.',
+    }
+  }
+
+  const listaActual = obtenerTodasCitas()
+  if (esSolicitudDuplicada(payload, listaActual)) {
+    return {
+      ok: false,
+      error: 'Ya enviaste esta solicitud. Revisa Mis citas.',
+    }
+  }
+
+  const servicio = validacion.servicio
+  const estadoInicial = ESTADOS_CITA.pendiente
+
   const nueva = {
-    id: generarId(),
-    fecha: datos.fecha,
-    hora: datos.hora,
-    pacienteId: datos.pacienteId || '',
-    nombreMascota: datos.nombreMascota,
-    especie: datos.especie,
-    codigoServicio: datos.codigoServicio,
-    servicio: datos.nombreServicio,
-    correoDueno: datos.correo,
-    tutorCorreo: datos.correo,
-    mascotaId: datos.mascotaId || '',
-    motivo: (datos.observaciones || '').trim(),
-    nombreDueno: datos.nombreDueno,
-    telefono: datos.telefono || '',
-    observaciones: datos.observaciones || '',
-    fueraHorario: Boolean(datos.fueraHorario),
-    precioEstimado: Number(datos.precioEstimado) || 0,
-    estado: ESTADOS_CITA.pendiente,
-    tipo: tipoVisualPorEstado(ESTADOS_CITA.pendiente),
+    id: generarIdUnico('c'),
+    fecha: payload.fecha,
+    hora: payload.hora,
+    pacienteId: payload.pacienteId || '',
+    nombreMascota: payload.nombreMascota || mascota.nombre,
+    especie: payload.especie || mascota.especie,
+    codigoServicio: servicio.codigo,
+    servicio: payload.nombreServicio || servicio.nombre,
+    correoDueno: validacion.correo,
+    tutorCorreo: validacion.correo,
+    mascotaId: mascota.id,
+    motivo: (payload.observaciones || '').trim(),
+    nombreDueno: payload.nombreDueno,
+    telefono: payload.telefono || '',
+    observaciones: payload.observaciones || '',
+    fueraHorario: Boolean(payload.fueraHorario),
+    precioEstimado: Number(payload.precioEstimado) || Number(servicio.precio) || 0,
+    estado: estadoInicial,
+    tipo: tipoVisualPorEstado(estadoInicial),
     propuestaFecha: '',
     propuestaHora: '',
   }
 
-  const lista = [...obtenerTodasCitas(), nueva]
+  const lista = [...listaActual, nueva]
   guardarLista(CLAVES.citas, lista)
   return { ok: true, cita: nueva }
 }

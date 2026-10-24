@@ -16,6 +16,7 @@ export default function DuenoConfirmacionCitaPage() {
   const { usuario } = useAuth()
   const { solicitar } = useCitas()
   const [enviando, setEnviando] = useState(false)
+  const [errorEnvio, setErrorEnvio] = useState('')
 
   const solicitud = location.state?.solicitud
 
@@ -39,6 +40,7 @@ export default function DuenoConfirmacionCitaPage() {
     }
 
     setEnviando(true)
+    setErrorEnvio('')
 
     const payload = {
       ...solicitud,
@@ -56,7 +58,7 @@ export default function DuenoConfirmacionCitaPage() {
     }
 
     setEnviando(false)
-    navigate(rutasCitaDueno.error)
+    setErrorEnvio(resultado.error || 'No se pudo enviar la solicitud.')
   }
 
   return (
@@ -64,6 +66,12 @@ export default function DuenoConfirmacionCitaPage() {
       titulo="Resumen de la solicitud"
       enlaces={enlacesPanelDueno}
     >
+      {errorEnvio && (
+        <p className="text-danger" role="alert">
+          {errorEnvio}
+        </p>
+      )}
+
       <ResumenConfirmacionSolicitud
         solicitud={solicitud}
         enviando={enviando}

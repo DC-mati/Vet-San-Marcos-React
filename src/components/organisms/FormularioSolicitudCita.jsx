@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+
+import { crearMascota } from '../../services/mascotasService'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Alert from 'react-bootstrap/Alert'
@@ -38,6 +40,7 @@ export default function FormularioSolicitudCita({
     ...valoresIniciales,
   })
   const [errores, setErrores] = useState({})
+  const [enviando, setEnviando] = useState(false)
 
   const servicioSeleccionado = useMemo(
     () => servicios.find((s) => s.codigo === datos.codigoServicio),
@@ -82,18 +85,61 @@ export default function FormularioSolicitudCita({
 
   const enviar = (evento) => {
     evento.preventDefault()
-    const nuevosErrores = validarSolicitudCita(datos)
+
+    if (enviando) {
+      return
+    }
+
+    setEnviando(true)
+
+    let mascotaId = datos.mascotaId
+    let registrarMascotaEnFlujo = false
+
+    if (bloquearDatosCuenta && !mascotaId) {
+      if (!(datos.nombreMascota || '').trim()) {
+        setErrores({
+          nombreMascota: 'Selecciona una mascota o escribe un nombre para registrarla.',
+        })
+        setEnviando(false)
+        return
+      }
+      registrarMascotaEnFlujo = true
+    }
+
+    if (!bloquearDatosCuenta && !mascotaId) {
+      const registro = crearMascota({
+        nombre: datos.nombreMascota,
+        especie: datos.especie,
+        tutorCorreo: datos.correo,
+      })
+      if (!registro.ok) {
+        setErrores({ nombreMascota: registro.error })
+        setEnviando(false)
+        return
+      }
+      mascotaId = registro.mascota.id
+    }
+
+    const datosEnvio = {
+      ...datos,
+      mascotaId,
+      registrarMascotaEnFlujo,
+    }
+
+    const nuevosErrores = validarSolicitudCita(datosEnvio)
 
     if (Object.keys(nuevosErrores).length > 0) {
       setErrores(nuevosErrores)
+      setEnviando(false)
       return
     }
 
     onContinuar({
-      ...datos,
+      ...datosEnvio,
       nombreServicio: servicioSeleccionado?.nombre || '',
       precioEstimado,
     })
+    setEnviando(false)
   }
 
   return (
@@ -118,8 +164,8 @@ export default function FormularioSolicitudCita({
             ))}
           </Form.Select>
           <Form.Text className="text-muted">
-            También puedes escribir una mascota nueva abajo si aún no la
-            registraste.
+            Si no aparece en la lista, escribe el nombre abajo y se registrará al
+            continuar.
           </Form.Text>
         </Form.Group>
       )}
@@ -265,8 +311,8 @@ export default function FormularioSolicitudCita({
         </p>
       )}
 
-      <Button type="submit" variant="primary">
-        Revisar solicitud
+      <Button type="submit" variant="primary" disabled={enviando}>
+        {enviando ? 'Procesando...' : 'Revisar solicitud'}
       </Button>
     </Form>
   )

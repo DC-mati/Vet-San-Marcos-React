@@ -1,8 +1,5 @@
 import { CLAVES, guardarLista, leerLista } from '../utils/storage'
-
-function generarId() {
-  return `m${Date.now()}`
-}
+import { generarIdUnico } from '../utils/idUnico'
 
 function asegurarMascotas() {
   return leerLista(CLAVES.mascotas, [])
@@ -36,7 +33,7 @@ export function crearMascota(datos) {
   }
 
   const nueva = {
-    id: generarId(),
+    id: generarIdUnico('m'),
     tutorCorreo,
     nombre,
     especie: (datos.especie || 'Perro').trim(),

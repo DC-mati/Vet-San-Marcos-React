@@ -35,5 +35,6 @@ export const CLAVES = {
   mascotas: 'vet_data_pets',
   usuarios: 'vet_data_users',
   usuariosAdmin: 'vet_usuarios_admin',
+  usuariosOverrides: 'vet_usuarios_overrides',
   sesion: 'vet_sesion',
 }

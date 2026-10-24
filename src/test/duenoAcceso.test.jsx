@@ -24,6 +24,7 @@ import RutaProtegida from '../components/RutaProtegida'
 import PublicHeader from '../components/organisms/HeaderPublico'
 import { CLAVE_DEMO } from '../data/usuariosDemo'
 import { crearCita, actualizarEstadoCita } from '../services/citasService'
+import { crearMascota } from '../services/mascotasService'
 import { CLAVES } from '../utils/storage'
 import { iniciarSesion } from '../services/authService'
 
@@ -33,6 +34,30 @@ function renderRutas(inicial, rutas) {
       <AppProviders>{rutas}</AppProviders>
     </MemoryRouter>,
   )
+}
+
+function crearCitaDePrueba(opciones) {
+  const correo = opciones.correo || 'camila@correo.cl'
+  let mascotaId = opciones.mascotaId
+
+  if (!mascotaId) {
+    const registro = crearMascota({
+      nombre: opciones.nombreMascota || 'Mascota QA',
+      especie: opciones.especie || 'Perro',
+      tutorCorreo: correo,
+    })
+    mascotaId = registro.mascota.id
+  }
+
+  return crearCita({
+    codigoServicio: 'SV001',
+    nombreServicio: 'Consulta general',
+    precioEstimado: 15000,
+    nombreDueno: opciones.nombreDueno || 'Dueño',
+    ...opciones,
+    correo,
+    mascotaId,
+  })
 }
 
 function sesionDueno(correo, nombre) {
@@ -126,28 +151,22 @@ describe('Acceso del dueño de mascota', () => {
   })
 
   it('4. dueño solo ve sus citas en mis citas', () => {
-    crearCita({
+    crearCitaDePrueba({
       fecha: '2026-12-10',
       hora: '10:00',
       nombreMascota: 'Luna',
       especie: 'Perro',
-      codigoServicio: 'SV001',
-      nombreServicio: 'Consulta general',
       correo: 'camila@correo.cl',
       nombreDueno: 'Camila Rojas',
-      precioEstimado: 15000,
     })
 
-    crearCita({
+    crearCitaDePrueba({
       fecha: '2026-12-11',
       hora: '11:00',
       nombreMascota: 'Otro',
       especie: 'Gato',
-      codigoServicio: 'SV001',
-      nombreServicio: 'Consulta general',
       correo: 'otro@correo.cl',
       nombreDueno: 'Otra persona',
-      precioEstimado: 15000,
     })
 
     sesionDueno('camila@correo.cl', 'Camila Rojas')
@@ -171,28 +190,22 @@ describe('Acceso del dueño de mascota', () => {
   })
 
   it('5. dos dueños ven citas distintas', () => {
-    crearCita({
+    crearCitaDePrueba({
       fecha: '2026-12-12',
       hora: '09:00',
       nombreMascota: 'Milo',
       especie: 'Perro',
-      codigoServicio: 'SV001',
-      nombreServicio: 'Consulta general',
       correo: 'dueno1@correo.cl',
       nombreDueno: 'Dueño Uno',
-      precioEstimado: 15000,
     })
 
-    crearCita({
+    crearCitaDePrueba({
       fecha: '2026-12-13',
       hora: '09:30',
       nombreMascota: 'Kiwi',
       especie: 'Ave',
-      codigoServicio: 'SV001',
-      nombreServicio: 'Consulta general',
       correo: 'dueno2@correo.cl',
       nombreDueno: 'Dueño Dos',
-      precioEstimado: 15000,
     })
 
     sesionDueno('dueno1@correo.cl', 'Dueño Uno')
@@ -239,16 +252,13 @@ describe('Acceso del dueño de mascota', () => {
   })
 
   it('6. recepción cambia estado y el dueño lo ve', () => {
-    const { cita } = crearCita({
+    const { cita } = crearCitaDePrueba({
       fecha: '2026-12-14',
       hora: '15:00',
       nombreMascota: 'Bruno',
       especie: 'Perro',
-      codigoServicio: 'SV001',
-      nombreServicio: 'Consulta general',
       correo: 'camila@correo.cl',
       nombreDueno: 'Camila Rojas',
-      precioEstimado: 15000,
     })
 
     actualizarEstadoCita(cita.id, 'Confirmada')
@@ -329,16 +339,13 @@ describe('Acceso del dueño de mascota', () => {
   it('9. nueva cita queda asociada al correo del dueño', () => {
     iniciarSesion('camila@correo.cl', CLAVE_DEMO)
 
-    const resultado = crearCita({
+    const resultado = crearCitaDePrueba({
       fecha: '2026-12-20',
       hora: '12:00',
       nombreMascota: 'Nueva',
       especie: 'Gato',
-      codigoServicio: 'SV001',
-      nombreServicio: 'Consulta general',
       correo: 'camila@correo.cl',
       nombreDueno: 'Camila Rojas',
-      precioEstimado: 15000,
     })
 
     expect(resultado.ok).toBe(true)
@@ -364,16 +371,13 @@ describe('Acceso del dueño de mascota', () => {
   })
 
   it('10. citas persisten en localStorage tras recargar contexto', () => {
-    crearCita({
+    crearCitaDePrueba({
       fecha: '2026-12-21',
       hora: '08:00',
       nombreMascota: 'Persistente',
       especie: 'Perro',
-      codigoServicio: 'SV001',
-      nombreServicio: 'Consulta general',
       correo: 'camila@correo.cl',
       nombreDueno: 'Camila Rojas',
-      precioEstimado: 15000,
     })
 
     sesionDueno('camila@correo.cl', 'Camila Rojas')
