@@ -14,7 +14,7 @@ export const enlacesAdmin = [
   { to: '/admin/inventario', texto: 'Inventario' },
   { to: '/admin/usuarios', texto: 'Usuarios' },
   { to: '/admin/reportes', texto: 'Reportes' },
-  { to: '/recepcion', texto: 'Recepción' },
+  { to: '/admin/recepcion', texto: 'Recepción' },
 ]
 
 export const enlacesRecepcion = [

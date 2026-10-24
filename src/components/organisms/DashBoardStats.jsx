@@ -58,9 +58,9 @@ function DashboardStats() {
       </Col>
       <Col sm={6} xl={3}>
         <TarjetaMetricaPanel
-          titulo="Usuarios demo"
+          titulo="Usuarios registrados"
           valor={metricas.usuarios}
-          descripcion="Cuentas visibles sin contraseñas"
+          descripcion="Cuentas activas en el sistema"
         />
       </Col>
       <Col sm={6} xl={3}>

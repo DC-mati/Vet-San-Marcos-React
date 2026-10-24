@@ -25,6 +25,7 @@ import AdminReportesPage from './pages/AdminReportesPage'
 import DuenoMascotasPage from './pages/DuenoMascotasPage'
 import RecepcionPage from './pages/RecepcionPage'
 import RecepcionPacientesPage from './pages/RecepcionPacientesPage'
+import AdminRecepcionPage from './pages/AdminRecepcionPage'
 import VeterinarioDashboardPage from './pages/VeterinarioDashboardPage'
 import TecnicoDashboardPage from './pages/TecnicoDashboardPage'
 import NosotrosPage from './pages/NosotrosPage'
@@ -172,11 +173,19 @@ export default function App() {
           </RutaProtegida>
         }
       />
+      <Route
+        path="/admin/recepcion"
+        element={
+          <RutaProtegida rolesPermitidos={['admin']}>
+            <AdminRecepcionPage />
+          </RutaProtegida>
+        }
+      />
 
       <Route
         path="/recepcion"
         element={
-          <RutaProtegida rolesPermitidos={['recepcion', 'admin']}>
+          <RutaProtegida rolesPermitidos={['recepcion']}>
             <RecepcionPage />
           </RutaProtegida>
         }
@@ -184,7 +193,7 @@ export default function App() {
       <Route
         path="/recepcion/pacientes"
         element={
-          <RutaProtegida rolesPermitidos={['recepcion', 'admin']}>
+          <RutaProtegida rolesPermitidos={['recepcion']}>
             <RecepcionPacientesPage />
           </RutaProtegida>
         }

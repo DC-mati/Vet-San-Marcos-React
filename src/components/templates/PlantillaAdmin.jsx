@@ -24,7 +24,13 @@ function MenuLateral({ enlaces, onNavigate, onCerrarSesion }) {
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.to === '/dueno' || item.to === '/admin'}
+            end={
+              item.to === '/dueno'
+              || item.to === '/admin'
+              || item.to === '/recepcion'
+              || item.to === '/veterinario'
+              || item.to === '/tecnico'
+            }
             className={claseEnlaceActivo}
             onClick={onNavigate}
           >

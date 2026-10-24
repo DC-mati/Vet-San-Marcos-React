@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button'
 import Alert from 'react-bootstrap/Alert'
 import { Link, useNavigate } from 'react-router-dom'
 
+import EnlaceVolverInicio from '../components/atoms/EnlaceVolverInicio'
 import PlantillaPublica from '../components/templates/PlantillaPublica'
 import { useAuth } from '../context/AuthContext'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
@@ -53,11 +54,11 @@ export default function RegistroPage() {
     <PlantillaPublica>
       <Container fluid="xxl" className="px-3 px-lg-4 py-5 page-section">
         <div className="mx-auto" style={{ maxWidth: 480 }}>
+          <EnlaceVolverInicio className="d-inline-block mb-3" />
           <h1 className="mb-4">Registro de dueño de mascota</h1>
-          <Alert variant="secondary" className="small">
-            Registro simulado solo para la evaluación. No uses contraseñas
-            reales.
-          </Alert>
+          <p className="text-secondary small">
+            Crea tu cuenta para gestionar mascotas y solicitar citas en línea.
+          </p>
 
           {mensaje && <Alert variant={tipo}>{mensaje}</Alert>}
 

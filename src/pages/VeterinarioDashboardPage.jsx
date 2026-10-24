@@ -26,7 +26,7 @@ export default function VeterinarioDashboardPage() {
   return (
     <PlantillaAdmin
       titulo="Panel veterinario"
-      descripcion="Agenda general de consultas (simulación sin asignación por profesional)."
+      descripcion="Agenda general de consultas programadas en la clínica."
       enlaces={enlacesVeterinario}
     >
       <Alert variant="secondary" className="small">

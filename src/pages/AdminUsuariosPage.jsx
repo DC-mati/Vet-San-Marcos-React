@@ -39,7 +39,7 @@ export default function AdminUsuariosPage() {
   const guardarAlta = (evento) => {
     evento.preventDefault()
     const resultado = crearUsuarioAdmin(formAlta)
-    setMensaje(resultado.ok ? 'Usuario creado (simulación).' : resultado.error)
+    setMensaje(resultado.ok ? 'Usuario creado correctamente.' : resultado.error)
     if (resultado.ok) {
       setMostrarAlta(false)
       setFormAlta({ nombre: '', correo: '', rol: 'cliente' })
@@ -50,13 +50,9 @@ export default function AdminUsuariosPage() {
   return (
     <PlantillaAdmin
       titulo="Gestión de usuarios"
-      descripcion="Simulación académica. Las contraseñas no se muestran en tablas."
+      descripcion="Administra las cuentas, los roles y el estado de los usuarios."
       enlaces={enlacesAdmin}
     >
-      <Alert variant="info" className="small">
-        Simulación académica. Puedes activar o desactivar cuentas demo y las
-        creadas desde administración.
-      </Alert>
 
       {mensaje && (
         <Alert variant="info" dismissible onClose={() => setMensaje('')}>
@@ -65,7 +61,7 @@ export default function AdminUsuariosPage() {
       )}
 
       <Button className="mb-3" onClick={() => setMostrarAlta(true)}>
-        Crear cuenta demo
+        Crear usuario
       </Button>
 
       <div className="table-responsive">

@@ -6,7 +6,6 @@ import { enlacesAdmin } from '../constants/navegacionPaneles'
 import { useCitas } from '../context/CitasContext'
 import { useServicios } from '../context/ServiciosContext'
 import { useInventario } from '../context/InventarioContext'
-import { ESTADOS_CITA } from '../utils/estadosCita'
 import { useTituloPagina } from '../hooks/useTitulodePagina'
 
 export default function AdminReportesPage() {
@@ -42,7 +41,7 @@ export default function AdminReportesPage() {
   return (
     <PlantillaAdmin
       titulo="Reportes sencillos"
-      descripcion="Tablas calculadas desde el estado actual de la simulación."
+      descripcion="Resumen de citas, servicios e inventario según los datos actuales."
       enlaces={enlacesAdmin}
     >
       <h2 className="h5">Citas por estado</h2>
@@ -87,10 +86,6 @@ export default function AdminReportesPage() {
         </tbody>
       </Table>
 
-      <p className="text-muted small mt-3">
-        Referencia PGVet: estados como {ESTADOS_CITA.confirmada} y{' '}
-        {ESTADOS_CITA.realizada} se muestran con los nombres usados en la app.
-      </p>
     </PlantillaAdmin>
   )
 }

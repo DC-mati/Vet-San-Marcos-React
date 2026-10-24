@@ -38,7 +38,7 @@ export default function AdminPage() {
           <TarjetaMetricaPanel
             titulo="Citas registradas"
             valor={citas.length}
-            descripcion="Todas las solicitudes en localStorage"
+            descripcion="Todas las solicitudes registradas"
           />
         </Col>
         <Col sm={6} lg={3}>
@@ -68,7 +68,7 @@ export default function AdminPage() {
           Gestionar citas
         </Button>
         <Button as={Link} to="/admin/usuarios" variant="outline-secondary">
-          Ver usuarios demo
+          Gestionar usuarios
         </Button>
       </div>
     </PlantillaAdmin>

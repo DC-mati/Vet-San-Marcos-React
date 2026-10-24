@@ -41,9 +41,8 @@ export default function FormularioLogin() {
     <Form onSubmit={handleSubmit} id="login-form">
       {mensaje && <Alert variant="danger">{mensaje}</Alert>}
 
-      <Alert variant="secondary" className="small">
-        Autenticación simulada con cuentas ficticias. No uses contraseñas reales.
-        Demo: admin@sanmarcos.cl / {CLAVE_DEMO}
+      <Alert variant="secondary" className="small mb-0">
+        Acceso de prueba: admin@sanmarcos.cl / {CLAVE_DEMO}
       </Alert>
 
       <Form.Group className="mb-3" controlId="email">

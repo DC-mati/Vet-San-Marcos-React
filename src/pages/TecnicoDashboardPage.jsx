@@ -60,8 +60,8 @@ export default function TecnicoDashboardPage() {
 
       {alertasStock.length > 0 && (
         <Alert variant="warning">
-          {alertasStock.length} productos con stock ≤ {UMBRAL_STOCK_DEMO}{' '}
-          (umbral demo, no viene del Excel).
+          {alertasStock.length} productos con stock bajo (umbral de alerta:{' '}
+          {UMBRAL_STOCK_DEMO} unidades).
         </Alert>
       )}
 

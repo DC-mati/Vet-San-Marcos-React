@@ -145,8 +145,8 @@ export default function FormularioSolicitudCita({
   return (
     <Form onSubmit={enviar} noValidate>
       <Alert variant="secondary" className="small">
-        Simulación frontend: no hay calendario real de disponibilidad.
-        La recepción confirmará o propondrá otro horario.
+        Tu solicitud será revisada por recepción. Podrás consultar su estado
+        desde Mis citas.
       </Alert>
 
       {mascotasRegistradas.length > 0 && (

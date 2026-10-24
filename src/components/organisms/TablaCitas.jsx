@@ -263,7 +263,7 @@ function AccionesCita({
             </Modal.Header>
             <Modal.Body>
               ¿Eliminar la solicitud de {cita.nombreMascota || cita.pacienteId}?
-              Esta acción no se puede deshacer en la simulación.
+              Esta acción no se puede deshacer.
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={() => setMostrarEliminar(false)}>

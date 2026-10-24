@@ -33,11 +33,11 @@ export default function AdminInventarioPage() {
   return (
     <PlantillaAdmin
       titulo="Inventario"
-      descripcion="Productos del catálogo oficial. Alerta demo con stock ≤ umbral configurable."
+      descripcion="Productos del catálogo oficial con stock y precios."
       enlaces={enlacesAdmin}
     >
       <Alert variant="secondary" className="small">
-        Umbral de demostración para stock bajo: {UMBRAL_STOCK_DEMO} unidades.
+        Umbral de alerta configurado: {UMBRAL_STOCK_DEMO} unidades.
       </Alert>
 
       {mensaje && (
@@ -48,7 +48,7 @@ export default function AdminInventarioPage() {
 
       {bajos.length > 0 && (
         <Alert variant="warning">
-          {bajos.length} productos con stock bajo según el umbral demo.
+          {bajos.length} productos con stock bajo según el umbral configurado.
         </Alert>
       )}
 
