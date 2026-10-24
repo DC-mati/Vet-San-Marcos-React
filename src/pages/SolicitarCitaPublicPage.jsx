@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 
 import '../admin.css'
@@ -13,13 +14,15 @@ export default function SolicitarCitaPublicPage() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const { usuario } = useAuth()
+  // Solo redirige si ya venía autenticado como dueño, no tras crear cuenta en el flujo.
+  const yaEraDuenoAlEntrar = useRef(usuario?.rol === 'cliente')
 
   const codigo = params.get('codigo') || ''
   const destinoDueno = codigo
     ? `${rutasCitaDueno.formulario}?codigo=${encodeURIComponent(codigo)}`
     : rutasCitaDueno.formulario
 
-  if (usuario?.rol === 'cliente') {
+  if (yaEraDuenoAlEntrar.current && usuario?.rol === 'cliente') {
     return <Navigate to={destinoDueno} replace />
   }
 

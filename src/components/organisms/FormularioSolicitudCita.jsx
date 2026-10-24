@@ -9,6 +9,7 @@ import { useCitas } from '../../context/CitasContext'
 import { useAuth } from '../../context/AuthContext'
 import { useMascotas } from '../../context/MascotasContext'
 import { correoYaRegistrado } from '../../services/authService'
+import { validarDatosNuevaCita } from '../../services/citasService'
 import {
   calcularPrecioUrgencia,
   esServicioUrgencia,
@@ -198,83 +199,106 @@ export default function FormularioSolicitudCita({
     setMensaje('')
     setErrores({})
 
-    const nuevosErrores = validarSolicitudCita(datos)
+    try {
+      const datosConfirmacion =
+        dueñoAutenticado && usuario
+          ? {
+              ...datos,
+              correo: datos.correo || usuario.correo,
+              nombreDueno: datos.nombreDueno || usuario.nombre || '',
+            }
+          : datos
 
-    if (!dueñoAutenticado) {
-      if (!validarEmail(datos.correo)) {
-        nuevosErrores.correo = 'Escribe un correo válido.'
+      const nuevosErrores = validarSolicitudCita(datosConfirmacion)
+
+      if (!dueñoAutenticado) {
+        if (!validarEmail(datos.correo)) {
+          nuevosErrores.correo = 'Escribe un correo válido.'
+        }
+
+        const existe = correoYaRegistrado(datos.correo)
+        setCuentaExistente(existe)
+
+        if (existe) {
+          if (!usuario || usuario.correo !== datos.correo.trim().toLowerCase()) {
+            nuevosErrores.general =
+              'Inicia sesión con este correo para confirmar la solicitud.'
+            setErrores(nuevosErrores)
+            return
+          }
+        } else {
+          if (clave.length < 6) {
+            nuevosErrores.clave = 'La contraseña debe tener al menos 6 caracteres.'
+          }
+          if (clave !== confirmarClave) {
+            nuevosErrores.confirmarClave = 'Las contraseñas no coinciden.'
+          }
+        }
       }
 
-      const existe = correoYaRegistrado(datos.correo)
-      setCuentaExistente(existe)
-
-      if (existe) {
-        if (!usuario || usuario.correo !== datos.correo.trim().toLowerCase()) {
-          nuevosErrores.general =
-            'Inicia sesión con este correo para confirmar la solicitud.'
-          setErrores(nuevosErrores)
-          setEnviando(false)
-          return
-        }
-      } else {
-        if (clave.length < 6) {
-          nuevosErrores.clave = 'La contraseña debe tener al menos 6 caracteres.'
-        }
-        if (clave !== confirmarClave) {
-          nuevosErrores.confirmarClave = 'Las contraseñas no coinciden.'
-        }
-      }
-    }
-
-    if (Object.keys(nuevosErrores).length > 0) {
-      setErrores(nuevosErrores)
-      setEnviando(false)
-      return
-    }
-
-    if (!dueñoAutenticado && !correoYaRegistrado(datos.correo)) {
-      const registro = registroYLogin({
-        nombre: datos.nombreDueno,
-        correo: datos.correo,
-        clave,
-      })
-
-      if (!registro.ok) {
-        setMensaje(registro.error)
-        setEnviando(false)
+      if (Object.keys(nuevosErrores).length > 0) {
+        setErrores(nuevosErrores)
+        setMensaje('Revisa los datos de la cita. Puedes volver atrás para corregirlos.')
         return
       }
-    }
 
-    const correoFinal = (
-      dueñoAutenticado || usuario?.rol === 'cliente'
-        ? usuario.correo
-        : datos.correo
-    )
-      .trim()
-      .toLowerCase()
+      const correoDuenoSesion =
+        dueñoAutenticado || usuario?.rol === 'cliente'
+          ? usuario?.correo
+          : datos.correo
 
-    const payload = {
-      ...datos,
-      correo: correoFinal,
-      tutorCorreo: correoFinal,
-      nombreDueno:
-        dueñoAutenticado || usuario?.nombre || datos.nombreDueno,
-      nombreServicio: servicioSeleccionado?.nombre || '',
-      precioEstimado,
-      registrarMascotaEnFlujo: !datos.mascotaId,
-    }
+      if (!correoDuenoSesion) {
+        setMensaje('No se pudo identificar la cuenta del dueño.')
+        return
+      }
 
-    const resultado = solicitar(payload)
+      const correoFinal = correoDuenoSesion.trim().toLowerCase()
 
-    if (resultado.ok) {
-      onExito?.(resultado.cita)
+      const payload = {
+        ...datosConfirmacion,
+        correo: correoFinal,
+        tutorCorreo: correoFinal,
+        nombreDueno:
+          dueñoAutenticado || usuario?.nombre || datosConfirmacion.nombreDueno,
+        nombreServicio: servicioSeleccionado?.nombre || '',
+        precioEstimado,
+        registrarMascotaEnFlujo: !datos.mascotaId,
+      }
+
+      const validacionCita = validarDatosNuevaCita(payload)
+      if (!validacionCita.ok) {
+        setMensaje(validacionCita.error)
+        return
+      }
+
+      if (!dueñoAutenticado && !correoYaRegistrado(datos.correo)) {
+        const registro = registroYLogin({
+          nombre: datos.nombreDueno,
+          correo: datos.correo,
+          clave,
+        })
+
+        if (!registro.ok) {
+          setMensaje(registro.error)
+          return
+        }
+
+        payload.correo = registro.usuario.correo
+        payload.tutorCorreo = registro.usuario.correo
+        payload.nombreDueno = registro.usuario.nombre || payload.nombreDueno
+      }
+
+      const resultado = solicitar(payload)
+
+      if (resultado.ok) {
+        onExito?.(resultado.cita)
+        return
+      }
+
+      setMensaje(resultado.error || 'No se pudo enviar la solicitud.')
+    } finally {
       setEnviando(false)
-      return
     }
-
-    setMensaje(resultado.error || 'No se pudo enviar la solicitud.')
-    setEnviando(false)
   }
 
   const progreso = (
@@ -478,9 +502,10 @@ export default function FormularioSolicitudCita({
                 actualizarCampo('correo', e.target.value)
                 setCuentaExistente(false)
               }}
-              onBlur={() => {
-                if (validarEmail(datos.correo)) {
-                  setCuentaExistente(correoYaRegistrado(datos.correo))
+              onBlur={(e) => {
+                const correo = e.target.value
+                if (validarEmail(correo)) {
+                  setCuentaExistente(correoYaRegistrado(correo))
                 }
               }}
               isInvalid={Boolean(errores.correo)}
