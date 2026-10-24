@@ -1,17 +1,13 @@
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Nav from 'react-bootstrap/Nav';
-import { Link } from 'react-router-dom';
+import Container from 'react-bootstrap/Container'
+import Navbar from 'react-bootstrap/Navbar'
+import Nav from 'react-bootstrap/Nav'
+import { Link } from 'react-router-dom'
 
-import logo from '../../assets/logo-san-marcos.png';
+import logo from '../../assets/logo-san-marcos.png'
 
 export default function PublicHeader() {
   return (
-    <Navbar
-      expand="lg"
-      sticky="top"
-      className="public-navbar"
-    >
+    <Navbar expand="lg" sticky="top" className="public-navbar">
       <Container>
         <Navbar.Brand
           as={Link}
@@ -29,11 +25,30 @@ export default function PublicHeader() {
 
         <Navbar.Collapse id="public-navbar-nav">
           <Nav className="ms-auto align-items-lg-center gap-lg-2">
-            <Nav.Link href="#inicio">Inicio</Nav.Link>
-            <Nav.Link href="#servicios">Servicios</Nav.Link>
-            <Nav.Link href="#nosotros">Nosotros</Nav.Link>
-            <Nav.Link href="#contacto">Contacto</Nav.Link>
-
+            <Nav.Link as={Link} to="/">
+              Inicio
+            </Nav.Link>
+            <Nav.Link as={Link} to="/servicios">
+              Servicios
+            </Nav.Link>
+            <Nav.Link as={Link} to="/categorias">
+              Categorías
+            </Nav.Link>
+            <Nav.Link href="/#nosotros">
+              Nosotros
+            </Nav.Link>
+            <Nav.Link href="/#contacto">
+              Contacto
+            </Nav.Link>
+            <Nav.Link as={Link} to="/blog">
+              Blog
+            </Nav.Link>
+            <Nav.Link as={Link} to="/solicitar-cita">
+              Solicitar cita
+            </Nav.Link>
+            <Nav.Link as={Link} to="/mis-citas">
+              Mis citas
+            </Nav.Link>
             <Nav.Link as={Link} to="/login">
               Iniciar sesión
             </Nav.Link>
@@ -41,5 +56,5 @@ export default function PublicHeader() {
         </Navbar.Collapse>
       </Container>
     </Navbar>
-  );
+  )
 }

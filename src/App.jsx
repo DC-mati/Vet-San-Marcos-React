@@ -1,55 +1,124 @@
-import { Navigate, Route, Routes, Link } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom'
 
-import HomePage from './pages/HomePage';
-import LoginPage from './pages/LoginPage';
-import AdminPage from './pages/AdminPage';
-
-function ModuloPendiente({ titulo }) {
-  return (
-    <main className="container py-5">
-      <h1>{titulo}</h1>
-      <p>Esta sección está pendiente de migración a React.</p>
-
-      <Link to="/" className="btn btn-primary">
-        Volver al inicio
-      </Link>
-    </main>
-  );
-}
+import RutaProtegida from './components/RutaProtegida'
+import HomePage from './pages/HomePage'
+import LoginPage from './pages/LoginPage'
+import RegistroPage from './pages/RegistroPage'
+import ServiciosPage from './pages/ServiciosPage'
+import CategoriasPage from './pages/CategoriasPage'
+import DetalleServicioPage from './pages/DetalleServicioPage'
+import SolicitarCitaPage from './pages/SolicitarCitaPage'
+import ConfirmacionCitaPage from './pages/ConfirmacionCitaPage'
+import ResultadoCitaPage from './pages/ResultadoCitaPage'
+import MisCitasPage from './pages/MisCitasPage'
+import BlogPage from './pages/BlogPage'
+import BlogDetallePage from './pages/BlogDetallePage'
+import AdminPage from './pages/AdminPage'
+import AdminServiciosPage from './pages/AdminServiciosPage'
+import AdminCitasPage from './pages/AdminCitasPage'
+import RecepcionPage from './pages/RecepcionPage'
+import ClientePage from './pages/ClientePage'
+import PanelSimplePage from './pages/PanelSimplePage'
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/registro" element={<RegistroPage />} />
+
+      <Route path="/servicios" element={<ServiciosPage />} />
+      <Route path="/categorias" element={<CategoriasPage />} />
+      <Route path="/servicios/:codigo" element={<DetalleServicioPage />} />
+
+      <Route path="/solicitar-cita" element={<SolicitarCitaPage />} />
+      <Route
+        path="/solicitar-cita/confirmacion"
+        element={<ConfirmacionCitaPage />}
+      />
+      <Route
+        path="/solicitar-cita/exito"
+        element={<ResultadoCitaPage tipo="exito" />}
+      />
+      <Route
+        path="/solicitar-cita/error"
+        element={<ResultadoCitaPage tipo="error" />}
+      />
+      <Route path="/mis-citas" element={<MisCitasPage />} />
+
+      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/blog/:id" element={<BlogDetallePage />} />
 
       <Route
-        path="/servicios"
-        element={<ModuloPendiente titulo="Catálogo de servicios" />}
+        path="/admin"
+        element={
+          <RutaProtegida rolesPermitidos={['admin']}>
+            <AdminPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/admin/servicios"
+        element={
+          <RutaProtegida rolesPermitidos={['admin']}>
+            <AdminServiciosPage />
+          </RutaProtegida>
+        }
+      />
+      <Route
+        path="/admin/citas"
+        element={
+          <RutaProtegida rolesPermitidos={['admin']}>
+            <AdminCitasPage />
+          </RutaProtegida>
+        }
       />
 
       <Route
         path="/recepcion"
-        element={<ModuloPendiente titulo="Panel de recepción" />}
-      />
-
-      <Route
-        path="/veterinario"
-        element={<ModuloPendiente titulo="Panel veterinario" />}
-      />
-
-      <Route
-        path="/tecnico"
-        element={<ModuloPendiente titulo="Panel técnico" />}
+        element={
+          <RutaProtegida rolesPermitidos={['recepcion', 'admin']}>
+            <RecepcionPage />
+          </RutaProtegida>
+        }
       />
 
       <Route
         path="/cliente"
-        element={<ModuloPendiente titulo="Panel del cliente" />}
+        element={
+          <RutaProtegida rolesPermitidos={['cliente']}>
+            <ClientePage />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
+        path="/veterinario"
+        element={
+          <RutaProtegida rolesPermitidos={['veterinario']}>
+            <PanelSimplePage
+              titulo="Panel veterinario"
+              descripcion="Vista de demostración: agenda clínica conectada al flujo de citas del Parcial 2."
+              enlaces={[{ to: '/veterinario', texto: 'Inicio' }]}
+            />
+          </RutaProtegida>
+        }
+      />
+
+      <Route
+        path="/tecnico"
+        element={
+          <RutaProtegida rolesPermitidos={['tecnico']}>
+            <PanelSimplePage
+              titulo="Panel técnico"
+              descripcion="Vista de demostración para apoyo clínico y preparación de pacientes."
+              enlaces={[{ to: '/tecnico', texto: 'Inicio' }]}
+            />
+          </RutaProtegida>
+        }
       />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  );
+  )
 }

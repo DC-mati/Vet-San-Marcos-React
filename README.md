@@ -1,16 +1,94 @@
-# React + Vite
+# Veterinaria San Marcos — React (DSY1104 Parcial 2)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Aplicación frontend simulada para la clínica veterinaria **San Marcos** (Rancagua). Catálogo oficial, solicitudes de citas, paneles por rol y CRUD con **localStorage**.
 
-Currently, two official plugins are available:
+## Tecnologías
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+React 19, Vite 8, JavaScript, Bootstrap 5, React Bootstrap, React Router 7, Context API, Vitest, Testing Library.
 
-## React Compiler
+## Instalación
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+```
 
-## Expanding the Oxlint configuration
+## Ejecución
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+npm run dev
+```
+
+Abre la URL que muestra Vite (por defecto `http://localhost:5173`).
+
+## Pruebas y cobertura
+
+```bash
+npm run test:run
+npm run test:cov
+```
+
+Informe HTML en `coverage/index.html`.
+
+## Build y lint
+
+```bash
+npm run build
+npm run lint
+```
+
+## Estructura (Atomic Design)
+
+```text
+src/
+  components/atoms|molecules|organisms|templates/
+  pages/
+  data/          # Datos iniciales (Excel)
+  services/      # CRUD sin React
+  context/       # Estado compartido
+  utils/         # Reglas pequeñas (precio, urgencia, validación)
+  test/
+```
+
+## Funcionalidades
+
+- Inicio, nosotros, contacto, blog, catálogo (31 servicios), categorías, detalle.
+- Búsqueda y filtro por categoría.
+- Flujo de cita: solicitar → resumen → éxito/error → mis citas.
+- Recepción: confirmar o proponer horario.
+- Admin: dashboard, CRUD servicios, gestión de citas.
+- Login simulado con cuentas demo (rol definido por la cuenta, no por selector libre).
+
+### Cuentas demo (contraseña: `demo123`)
+
+| Correo | Rol |
+|--------|-----|
+| admin@sanmarcos.cl | Administrador |
+| recepcion@sanmarcos.cl | Recepción |
+| veterinario@sanmarcos.cl | Veterinario |
+| tecnico@sanmarcos.cl | Técnico |
+| camila@correo.cl | Dueño de mascota |
+
+## Git
+
+Repositorio: [Vet-San-Marcos-React](https://github.com/DC-mati/Vet-San-Marcos-React)  
+Rama de trabajo: **RamaHana** (desde `RamaMatias`).
+
+## Limitaciones
+
+No hay backend ni base de datos real. Los datos persisten solo en el navegador (localStorage / sessionStorage). La autenticación es demostrativa.
+
+## Documentación para la evaluación
+
+Ver carpeta `docs/`:
+
+- `GUIA_ESTUDIANTE.md`
+- `GUIA_DEFENSA.md`
+- `RECORRIDO_PRUEBAS.md`
+- `ARQUITECTURA.md`
+- `REQUISITOS_Y_EVIDENCIAS.md`
+- `COBERTURA_TESTING.md`
+- `PRESENTACION.md`
+
+## Integrantes
+
+Consulta el historial de GitHub del repositorio compartido del equipo.

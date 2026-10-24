@@ -1,24 +1,21 @@
-import Card from 'react-bootstrap/Card';
+import Card from 'react-bootstrap/Card'
+import { formatoPrecio } from '../../utils/formatoPrecio'
 
 export default function ServicePreviewCard({ servicio }) {
-  const precioFormateado = new Intl.NumberFormat('es-CL', {
-    maximumFractionDigits: 0,
-  }).format(servicio.precio);
-
   return (
     <Card className="h-100 shadow-sm border-0 service-preview">
       <Card.Body>
         <Card.Title>{servicio.nombre}</Card.Title>
 
         <Card.Text className="text-secondary mb-2">
-          {servicio.descripcion}
+          {servicio.especie || servicio.descripcion}
           {servicio.duracion && ` · ${servicio.duracion}`}
         </Card.Text>
 
         <p className="service-preview__price mb-0">
-          ${precioFormateado}
+          {formatoPrecio(servicio.precio)}
         </p>
       </Card.Body>
     </Card>
-  );
+  )
 }

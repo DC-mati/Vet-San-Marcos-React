@@ -1,14 +1,17 @@
-import PublicHeader from '../components/organisms/HeaderPublico';
-import HomeHero from '../components/organisms/Home';
-import AboutSection from '../components/organisms/SobreNosotros';
-import ServicesPreview from '../components/organisms/PreVistaServicios';
-import ContactSection from '../components/organisms/Contacto';
-import PublicFooter from '../components/organisms/PublicFooter';
+import PublicHeader from '../components/organisms/HeaderPublico'
+import HomeHero from '../components/organisms/Home'
+import AboutSection from '../components/organisms/SobreNosotros'
+import ServicesPreview from '../components/organisms/PreVistaServicios'
+import ContactSection from '../components/organisms/Contacto'
+import PublicFooter from '../components/organisms/PublicFooter'
 
-import { servicios } from '../data/servicios';
-import '../Homecss.css';
+import { useServicios } from '../context/ServiciosContext'
+import '../Homecss.css'
 
 export default function HomePage() {
+  const { servicios } = useServicios()
+  const destacados = servicios.slice(0, 6)
+
   return (
     <>
       <PublicHeader />
@@ -16,11 +19,11 @@ export default function HomePage() {
       <main>
         <HomeHero />
         <AboutSection />
-        <ServicesPreview services={servicios} />
+        <ServicesPreview services={destacados} />
         <ContactSection />
       </main>
 
       <PublicFooter />
     </>
-  );
+  )
 }
