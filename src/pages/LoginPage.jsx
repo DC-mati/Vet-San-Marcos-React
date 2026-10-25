@@ -1,19 +1,16 @@
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import LoginCard from '../components/organisms/LoginCard'
+import { useTituloPagina } from '../hooks/useTitulodePagina'
+import '../Login.css'
 
-import LoginCard from '../components/organisms/LoginCard';
+export default function LoginPage() {
+  useTituloPagina('Login')
 
-function LoginPage() {
   return (
-    <Container>
-      <Row className="justify-content-center mt-5">
-        <Col xs={12} sm={8} md={6} lg={4}>
-          <LoginCard />
-        </Col>
-      </Row>
-    </Container>
-  );
+    <div className="login-page">
+      <div className="login-page__scrim" aria-hidden="true" />
+      <div className="login-page__inner">
+        <LoginCard />
+      </div>
+    </div>
+  )
 }
-
-export default LoginPage;
