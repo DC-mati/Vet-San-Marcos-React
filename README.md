@@ -7,7 +7,8 @@
 Aplicación web para la gestión de servicios veterinarios, mascotas y solicitudes de citas. Desarrollada con React, Vite y Bootstrap, ofrece una experiencia responsive y espacios de trabajo organizados según el rol de cada usuario.
 
 Repositorio: [Vet-San-Marcos-React](https://github.com/DC-mati/Vet-San-Marcos-React)  
-Rama de entrega: [`RamaHana`](https://github.com/DC-mati/Vet-San-Marcos-React/tree/RamaHana)
+Rama principal de entrega: [`main`](https://github.com/DC-mati/Vet-San-Marcos-React/tree/main)  
+Rama de desarrollo integrada: [`RamaHana`](https://github.com/DC-mati/Vet-San-Marcos-React/tree/RamaHana)
 
 ---
 
@@ -128,7 +129,7 @@ public/          # Favicon e íconos estáticos
 Requisitos: **Node.js 20.19+** o **22.12+** (compatible con Vite 8, según la [documentación oficial de Vite](https://vite.dev/guide/#)) y **npm**.
 
 ```bash
-git clone -b RamaHana https://github.com/DC-mati/Vet-San-Marcos-React.git
+git clone -b main https://github.com/DC-mati/Vet-San-Marcos-React.git
 cd Vet-San-Marcos-React
 npm install
 ```
@@ -211,6 +212,10 @@ Registro basado en el historial de Git del repositorio. Los enlaces apuntan a co
 | 2026-10-24 | Hanael Echeverría | README profesional, identificación Grupo 9 y favicon inicial | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/9c1f06c) |
 | 2026-10-24 | Hanael Echeverría | Ajuste del favicon con el logo completo del sitio | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/2cec397) |
 | 2026-10-24 | Hanael Echeverría | Ajustes finales: favicon con símbolo, recepción, validación de citas y requisito Node | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/376c75d) |
+| 2026-10-24 | Hanael Echeverría | Flujo público de solicitud de cita en dos etapas con registro integrado | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/934a3f1) |
+| 2026-10-24 | Hanael Echeverría | Estabilización del flujo público tras registro y limpieza de redirecciones | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/9a1297c) |
+| 2026-10-24 | Hanael Echeverría | Confirmación de citas desde el panel del dueño y sincronización de estado | [Ver commit](https://github.com/DC-mati/Vet-San-Marcos-React/commit/371da3b) |
+| 2026-10-25 | Hanael Echeverría | Integración de RamaHana en main para entrega final del Grupo 9 | Ver merge en `main` |
 
 ---
 
